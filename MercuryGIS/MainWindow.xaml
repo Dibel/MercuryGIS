@@ -1,0 +1,205 @@
+﻿<Fluent:RibbonWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
+        xmlns:local="clr-namespace:MercuryGIS"
+        xmlns:MercuryGISControl="clr-namespace:MercuryGISControl;assembly=MercuryGISControl" x:Class="MercuryGIS.MainWindow"
+        mc:Ignorable="d"
+        Title="MercuryGIS" Height="600" Width="700" SizeChanged="RibbonWindow_SizeChanged">
+    <Fluent:RibbonWindow.Resources>
+        <ResourceDictionary>
+            <TextBlock x:Key="Pan" Cursor="Resources/Pan.cur"/>
+            <TextBlock x:Key="ZoomIn" Cursor="Resources/ZoomIn.cur"/>
+            <TextBlock x:Key="ZoomOut" Cursor="Resources/ZoomOut.cur"/>
+        </ResourceDictionary>
+        <!--<ControlTemplate x:Key="ItemTemplate" TargetType="{x:Type ListViewItem}">
+            <Border
+		BorderThickness="{TemplateBinding Border.BorderThickness}"
+		Padding="{TemplateBinding Padding}"
+		BorderBrush="{TemplateBinding Border.BorderBrush}"
+		Background="{TemplateBinding Panel.Background}"
+		SnapsToDevicePixels="True">
+                <ContentPresenter
+			Content="{TemplateBinding Content}"
+			ContentTemplate="{TemplateBinding ContentTemplate}"
+			HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+			VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+			SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+            </Border>
+        </ControlTemplate>
+        
+                
+        <ContextMenu x:Key="ItemContextMenu">
+            <MenuItem x:Name="menuDelete" Header="删除" Click="menuDelete_Click" Command="{Binding Path=DataContext.MoreInfo, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"/>
+        </ContextMenu>
+
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="Template" Value="{StaticResource ItemTemplate}" />
+            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+        </Style>
+
+        <DataTemplate x:Key="ItemDataTemplate">
+            <CheckBox
+			x:Name="checkbox"
+			Content="{Binding}"
+			IsChecked="{Binding RelativeSource={RelativeSource FindAncestor,
+                    AncestorType={x:Type ListViewItem}}, Path=IsSelected, Mode=OneWayToSource}" />
+        </DataTemplate>-->
+    </Fluent:RibbonWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="row" Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Fluent:Ribbon AutomaticStateManagement="True"
+			x:Name="myRibbon">
+            <!--Backstage-->
+            <Fluent:Ribbon.Menu>
+                <Fluent:Backstage>
+                    <Fluent:BackstageTabControl>
+                        <Fluent:Button Header="打开" Click="Open_MouseDown"/>
+                        <Fluent:Button Header="保存" Click="Save_MouseDown"/>
+                        <Fluent:Button Header="导入" Click="Button_Click_1"/>
+                        <Fluent:Button Header="导出" Click="Button_Click"/>
+                    </Fluent:BackstageTabControl>
+                </Fluent:Backstage>
+            </Fluent:Ribbon.Menu>
+            <!--Tabs-->
+            <Fluent:RibbonTabItem x:Name="TabStart" Header="开始">
+                <Fluent:RibbonGroupBox Header="地图模式">
+                    <Fluent:ToggleButton x:Name="btnSelect" Header="选择"
+						LargeIcon="Resources/选择.jpg" Click="btnSelect_Click"/>
+                    <Fluent:ToggleButton x:Name="btnPan" Header="漫游"
+						LargeIcon="Resources/漫游.jpg" Click="btnPan_Click"/>
+                    <Fluent:ToggleButton x:Name="btnEdit" Header="编辑"
+						LargeIcon="Resources/编辑.jpg" Click="btnEdit_Click"/>
+                    <Fluent:Button x:Name="btnWholeScreen" Header="显示全图"
+						LargeIcon="Resources/显示全图.jpg" Click="btnWholeScreen_Click"/>
+                    <Fluent:ToggleButton x:Name="btnZoomIn" Header="放大" Icon="Resources/放大.jpg" SizeDefinition="Small"  Click="btnZoomIn_Click"/>
+                    <Fluent:ToggleButton x:Name="btnzoomOut" Header="缩小" Icon="Resources/缩小.jpg" SizeDefinition="Small" Click="btnzoomOut_Click"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="图层操作">
+                    <Fluent:DropDownButton x:Name="btnAddLayer" Header="添加图层"
+						LargeIcon="Resources/添加图层.jpg">
+                        <MenuItem x:Name="btnAddPointLayer" Header="添加点图层" Click="btnAddPointLayer_Click"></MenuItem>
+                        <MenuItem x:Name="btnAddLineLayer" Header="添加线图层" Click="btnAddLineLayer_Click"></MenuItem>
+                        <MenuItem x:Name="btnAddPolygonLayer" Header="添加面图层" Click="btnAddPolygonLayer_Click"></MenuItem>
+                    </Fluent:DropDownButton>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="查询">
+                    <Fluent:Button x:Name="btnQueryByLocat" Header="按位置查询"
+						LargeIcon="Resources/按位置查询.jpg" Click="btnQueryByLocat_Click"/>
+                    <Fluent:Button x:Name="btnQueryByAttri" Header="按属性查询"
+						LargeIcon="Resources/按属性查询.jpg" Click="btnQueryByAttri_Click"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="可视化">
+                    <Fluent:Button x:Name="btnSymbolize" Header="符号设置"
+						LargeIcon="Resources/符号设置.jpg" Click="btnSymbolize_Click"/>
+                    <Fluent:Button x:Name="btnMapLable" Header="添加注记"
+						LargeIcon="Resources/添加注记.jpg" Click="btnMapLable_Click"/>
+                    <Fluent:Button x:Name="btnMapping" Header="生成地图"
+						LargeIcon="Resources/生成地图.jpg" Click="btnMapping_Click"/>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+
+            <Fluent:RibbonTabItem x:Name="TabElement" Header="要素" Group="{Binding ElementName=groupEdit}">
+                <Fluent:RibbonGroupBox Header="添加要素">
+                <Fluent:Button x:Name="btnAddElement" Header="添加要素"
+						Icon="Images\Green.png"
+						LargeIcon="Resources/添加要素.jpg" Click="btnAddElement_Click"/>
+            </Fluent:RibbonGroupBox>
+            <Fluent:RibbonGroupBox Header="选择要素">
+                <Fluent:Button x:Name="btnSelectByLocation" Header="按位置选择"
+						Icon="Images\Green.png"
+						LargeIcon="Resources/按位置选择.png"/>
+                <Fluent:Button x:Name="btnSelectByAttribute" Header="按属性选择"
+						Icon="Images\Green.png"
+						LargeIcon="Resources/按属性选择.jpg"/>
+            </Fluent:RibbonGroupBox>
+            <Fluent:RibbonGroupBox Header="编辑状态">
+                    <Fluent:Button x:Name="btnSaveEdit" Header="保存编辑"
+						Icon="Images\Green.png"
+						LargeIcon="Resources/保存编辑.jpg"/>
+                    <Fluent:Button x:Name="btnEndEdit" Header="结束编辑"
+						Icon="Images\Green.png"
+						LargeIcon="Resources/结束编辑.jpg" Click="btnEndEdit_Click"/>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+            <!--<Fluent:RibbonTabItem x:Name="TabLayer" Header="图层" Group="{Binding ElementName=groupEdit}">
+                <Fluent:RibbonGroupBox Header="添加要素">
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>-->
+
+            <Fluent:Ribbon.ContextualGroups>
+                <Fluent:RibbonContextualTabGroup Header="编辑" Visibility="Collapsed"
+                x:Name="groupEdit" Background="Green" BorderBrush="Green" />
+                
+                <Fluent:RibbonContextualTabGroup Header="图层" Visibility="Collapsed"
+                x:Name="groupLayer" Background="Green" BorderBrush="Green" />
+            </Fluent:Ribbon.ContextualGroups>
+        </Fluent:Ribbon>
+        <Fluent:StatusBar x:Name="statusBar" HorizontalAlignment="Stretch"
+			VerticalAlignment="Bottom"
+			Grid.Row="2">
+            <Fluent:StatusBarItem x:Name="location"
+				Value="(0, 0)" Foreground="White"
+				HorizontalAlignment="Left">
+            </Fluent:StatusBarItem>
+            <Separator HorizontalAlignment="Left" />
+            
+            <Separator HorizontalAlignment="Left" />
+        </Fluent:StatusBar>
+        <Grid Margin="0,0,0,0.5" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="listView" Grid.Column="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="listView_MouseDoubleClick" PreviewMouseLeftButtonDown="listView_MouseLeftButtonDown">
+                <ListView.Resources>
+                    <Style TargetType="{x:Type GridViewColumnHeader}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </Style>
+                    <ContextMenu x:Key="ItemContextMenu">
+                        <MenuItem x:Name="MoveUp" Header="上移" Click="MoveUp_Click"/>
+                        <MenuItem x:Name="MoveDown" Header="下移" Click="MoveDown_Click"/>
+                        <MenuItem x:Name="Rename" Header="重命名" Click="Rename_Click"/>
+                        <!--<MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>-->
+                        <MenuItem x:Name="Data" Header="属性数据" Click="Data_Click"/>
+                    </ContextMenu>
+                </ListView.Resources>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                        <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>-->
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Check" Width="40">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding isChecked}" Click="OnCheckItem"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>
+
+        </Grid>
+
+        <!--<ListView Grid.Row="1" x:Name="listView" SelectionMode="Multiple"
+			ItemsSource="{Binding}"
+			ItemTemplate="{StaticResource ItemDataTemplate}"
+			ToggleButton.Click="OnCheckItem" Margin="0,0,575,0.5" />-->
+
+    </Grid>
+</Fluent:RibbonWindow>

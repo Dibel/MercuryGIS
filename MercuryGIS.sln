@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercuryGIS", "MercuryGIS\MercuryGIS.csproj", "{D9714DBE-818D-41F3-88E9-576C93FFCA6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercuryGISData", "MercuryGISData\MercuryGISData.csproj", "{63E6C21D-150B-45D6-B3B4-A83F51A34F02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercuryGISControl", "MercuryGISControl\MercuryGISControl.csproj", "{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestForm", "TestForm\TestForm.csproj", "{36A92D63-B044-4FDA-91A5-866568923B85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPicker", "ColorPickerLib\ColorPicker.csproj", "{99E90579-62FC-4898-B168-24F7DBD3A34D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Debug|x64.ActiveCfg = Debug|x64
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Debug|x64.Build.0 = Debug|x64
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Release|x64.ActiveCfg = Release|x64
+		{D9714DBE-818D-41F3-88E9-576C93FFCA6B}.Release|x64.Build.0 = Release|x64
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Debug|x64.ActiveCfg = Debug|x64
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Debug|x64.Build.0 = Debug|x64
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Release|x64.ActiveCfg = Release|x64
+		{63E6C21D-150B-45D6-B3B4-A83F51A34F02}.Release|x64.Build.0 = Release|x64
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Debug|x64.ActiveCfg = Debug|x64
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Debug|x64.Build.0 = Debug|x64
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Release|x64.ActiveCfg = Release|x64
+		{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}.Release|x64.Build.0 = Release|x64
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Debug|x64.ActiveCfg = Debug|x64
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Debug|x64.Build.0 = Debug|x64
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Release|x64.ActiveCfg = Release|x64
+		{36A92D63-B044-4FDA-91A5-866568923B85}.Release|x64.Build.0 = Release|x64
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Debug|x64.ActiveCfg = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Debug|x64.Build.0 = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Release|x64.ActiveCfg = Release|Any CPU
+		{99E90579-62FC-4898-B168-24F7DBD3A34D}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
