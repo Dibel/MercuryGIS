@@ -114,14 +114,14 @@ namespace MercuryGIS
             if (mapControl.MapMode == Mode.Edit || mapControl.MapMode == Mode.EditAdd)
             {
                 PropertyData form = new PropertyData();
-                int id = listView.SelectedIndex;
+                int id = listview_selectedindex();
                 form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
                 form.Show();
             }
             else
             {
                 PropertyDataReadOnly form = new PropertyDataReadOnly();
-                int id = listView.SelectedIndex;
+                int id = listview_selectedindex();
                 form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
                 form.Show();
             }
@@ -196,7 +196,7 @@ namespace MercuryGIS
 
         private void Rename_Click(object sender, RoutedEventArgs e)
         {
-            Layer layer = mapControl.Map.GetLayer(listView.SelectedIndex);
+            Layer layer = mapControl.Map.GetLayer(listview_selectedindex());
             InputBox dialog = new InputBox(layer.Name);
             if (dialog.ShowDialog() == true)
             {
@@ -207,9 +207,9 @@ namespace MercuryGIS
 
         private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (listView.SelectedIndex != -1)
+            if (listview_selectedindex() != -1)
             {
-                curLayer = mapControl.Map.GetLayer(listView.SelectedIndex);
+                curLayer = mapControl.Map.GetLayer(listview_selectedindex());
             }
         }
 
@@ -261,9 +261,9 @@ namespace MercuryGIS
 
         private void listView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (listView.SelectedIndex != -1)
+            if (listview_selectedindex() != -1)
             {
-                curLayer = mapControl.Map.GetLayer(listView.SelectedIndex);
+                curLayer = mapControl.Map.GetLayer(listview_selectedindex());
             }
         }
 
@@ -438,7 +438,7 @@ namespace MercuryGIS
 
         private void MoveUp_Click(object sender, RoutedEventArgs e)
         {
-            int id = listView.SelectedIndex;
+            int id = listview_selectedindex();
             if (id > 0)
             {
                 var temp = listView.Items[id];
@@ -451,7 +451,7 @@ namespace MercuryGIS
 
         private void MoveDown_Click(object sender, RoutedEventArgs e)
         {
-            int id = listView.SelectedIndex;
+            int id = listview_selectedindex();
             if (id < listView.Items.Count - 1)
             {
                 var temp = listView.Items[id];
@@ -468,6 +468,12 @@ namespace MercuryGIS
             double width = this.Width - listView.RenderSize.Width;
             mapControl.Height = height;
             mapControl.Width = width;
+        }
+
+        private int listview_selectedindex()
+        {
+            var item = listView.SelectedItem;
+            return listView.Items.IndexOf(item);
         }
     }
 

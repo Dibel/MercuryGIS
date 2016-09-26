@@ -3,11 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:Fluent="clr-namespace:Fluent;assembly=Fluent"
         xmlns:local="clr-namespace:MercuryGIS"
         xmlns:MercuryGISControl="clr-namespace:MercuryGISControl;assembly=MercuryGISControl" x:Class="MercuryGIS.MainWindow"
         mc:Ignorable="d"
         Title="MercuryGIS" Height="600" Width="700" SizeChanged="RibbonWindow_SizeChanged">
+
     <Fluent:RibbonWindow.Resources>
         <ResourceDictionary>
             <TextBlock x:Key="Pan" Cursor="Resources/Pan.cur"/>
@@ -109,19 +111,19 @@
 
             <Fluent:RibbonTabItem x:Name="TabElement" Header="要素" Group="{Binding ElementName=groupEdit}">
                 <Fluent:RibbonGroupBox Header="添加要素">
-                <Fluent:Button x:Name="btnAddElement" Header="添加要素"
+                    <Fluent:Button x:Name="btnAddElement" Header="添加要素"
 						Icon="Images\Green.png"
 						LargeIcon="Resources/添加要素.jpg" Click="btnAddElement_Click"/>
-            </Fluent:RibbonGroupBox>
-            <Fluent:RibbonGroupBox Header="选择要素">
-                <Fluent:Button x:Name="btnSelectByLocation" Header="按位置选择"
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="选择要素">
+                    <Fluent:Button x:Name="btnSelectByLocation" Header="按位置选择"
 						Icon="Images\Green.png"
 						LargeIcon="Resources/按位置选择.png"/>
-                <Fluent:Button x:Name="btnSelectByAttribute" Header="按属性选择"
+                    <Fluent:Button x:Name="btnSelectByAttribute" Header="按属性选择"
 						Icon="Images\Green.png"
 						LargeIcon="Resources/按属性选择.jpg"/>
-            </Fluent:RibbonGroupBox>
-            <Fluent:RibbonGroupBox Header="编辑状态">
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="编辑状态">
                     <Fluent:Button x:Name="btnSaveEdit" Header="保存编辑"
 						Icon="Images\Green.png"
 						LargeIcon="Resources/保存编辑.jpg"/>
@@ -138,7 +140,7 @@
             <Fluent:Ribbon.ContextualGroups>
                 <Fluent:RibbonContextualTabGroup Header="编辑" Visibility="Collapsed"
                 x:Name="groupEdit" Background="Green" BorderBrush="Green" />
-                
+
                 <Fluent:RibbonContextualTabGroup Header="图层" Visibility="Collapsed"
                 x:Name="groupLayer" Background="Green" BorderBrush="Green" />
             </Fluent:Ribbon.ContextualGroups>
@@ -151,15 +153,107 @@
 				HorizontalAlignment="Left">
             </Fluent:StatusBarItem>
             <Separator HorizontalAlignment="Left" />
-            
+
             <Separator HorizontalAlignment="Left" />
         </Fluent:StatusBar>
         <Grid Margin="0,0,0,0.5" Grid.Row="1">
-            <Grid.ColumnDefinitions>
+            <!--<Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="4*"/>
-            </Grid.ColumnDefinitions>
-            <ListView x:Name="listView" Grid.Column="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="listView_MouseDoubleClick" PreviewMouseLeftButtonDown="listView_MouseLeftButtonDown">
+            </Grid.ColumnDefinitions>-->
+            <xcad:DockingManager  Grid.Row="1"
+                           AllowMixedOrientation="True">
+                <xcad:DockingManager.DocumentHeaderTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
+                            <TextBlock Text="{Binding Title}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </xcad:DockingManager.DocumentHeaderTemplate>
+                <xcad:LayoutRoot x:Name="_layoutRoot">
+                    <xcad:LayoutPanel Orientation="Horizontal">
+                        <xcad:LayoutAnchorablePane DockWidth="Auto">
+                            <xcad:LayoutAnchorable ContentId="properties" Title="图层" CanHide="False" CanClose="False" AutoHideWidth="200">
+                                <TreeView x:Name="listView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="listView_MouseDoubleClick" PreviewMouseLeftButtonDown="listView_MouseLeftButtonDown">
+                                    <TreeView.Resources>
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Setter Property="HeaderTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <CheckBox Name="chk" Margin="2" IsChecked="{Binding isChecked}" Click="OnCheckItem"></CheckBox>
+                                                            <TextBlock Text="{Binding name}"></TextBlock>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                        <ContextMenu x:Key="ItemContextMenu">
+                                            <MenuItem x:Name="MoveUp" Header="上移" Click="MoveUp_Click"/>
+                                            <MenuItem x:Name="MoveDown" Header="下移" Click="MoveDown_Click"/>
+                                            <MenuItem x:Name="Rename" Header="重命名" Click="Rename_Click"/>
+                                            <!--<MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>-->
+                                            <MenuItem x:Name="Data" Header="属性数据" Click="Data_Click"/>
+                                        </ContextMenu>
+                                    </TreeView.Resources>
+                                    <TreeView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                                            <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>-->
+                                        </Style>
+                                    </TreeView.ItemContainerStyle>
+                                    <TreeViewItem Header="North America" IsExpanded="True"></TreeViewItem>
+
+                                </TreeView>
+                                <!--<ListView x:Name="listView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="listView_MouseDoubleClick" PreviewMouseLeftButtonDown="listView_MouseLeftButtonDown">
+                      <ListView.Resources>
+                          <Style TargetType="{x:Type GridViewColumnHeader}">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                          </Style>
+                          <ContextMenu x:Key="ItemContextMenu">
+                              <MenuItem x:Name="MoveUp" Header="上移" Click="MoveUp_Click"/>
+                              <MenuItem x:Name="MoveDown" Header="下移" Click="MoveDown_Click"/>
+                              <MenuItem x:Name="Rename" Header="重命名" Click="Rename_Click"/>
+                              -->
+                                <!--<MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>-->
+                                <!--
+                              <MenuItem x:Name="Data" Header="属性数据" Click="Data_Click"/>
+                          </ContextMenu>
+                      </ListView.Resources>
+                      <ListView.ItemContainerStyle>
+                          <Style TargetType="{x:Type ListViewItem}">
+                              <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                              -->
+                                <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>-->
+                                <!--
+                          </Style>
+                      </ListView.ItemContainerStyle>
+                      <ListView.View>
+                          <GridView>
+                              <GridViewColumn Header="Check" Width="40">
+                                  <GridViewColumn.CellTemplate>
+                                      <DataTemplate>
+                                          <CheckBox IsChecked="{Binding isChecked}" Click="OnCheckItem"/>
+                                      </DataTemplate>
+                                  </GridViewColumn.CellTemplate>
+                              </GridViewColumn>
+                              <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
+                          </GridView>
+                      </ListView.View>
+                  </ListView>-->
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument ContentId="document1" Title="Document 1" >
+                                <MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left"  VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutPanel>
+                </xcad:LayoutRoot>
+            </xcad:DockingManager>
+
+            <!--<ListView x:Name="listView" Grid.Column="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="listView_MouseDoubleClick" PreviewMouseLeftButtonDown="listView_MouseLeftButtonDown">
                 <ListView.Resources>
                     <Style TargetType="{x:Type GridViewColumnHeader}">
                         <Setter Property="Visibility" Value="Collapsed" />
@@ -168,14 +262,18 @@
                         <MenuItem x:Name="MoveUp" Header="上移" Click="MoveUp_Click"/>
                         <MenuItem x:Name="MoveDown" Header="下移" Click="MoveDown_Click"/>
                         <MenuItem x:Name="Rename" Header="重命名" Click="Rename_Click"/>
-                        <!--<MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>-->
+                        -->
+            <!--<MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>-->
+            <!--
                         <MenuItem x:Name="Data" Header="属性数据" Click="Data_Click"/>
                     </ContextMenu>
                 </ListView.Resources>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
                         <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
-                        <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>-->
+                        -->
+            <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>-->
+            <!--
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
@@ -190,9 +288,8 @@
                         <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding name}" />
                     </GridView>
                 </ListView.View>
-            </ListView>
+            </ListView>-->
 
-            <MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>
 
         </Grid>
 
