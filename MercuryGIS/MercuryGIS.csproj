@@ -69,6 +69,7 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ogr_csharp, Version=1.0.5496.33904, Culture=neutral, PublicKeyToken=db5a52b08dc5b321" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -120,8 +121,12 @@
     <Compile Include="InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LayerModel.cs" />
     <Compile Include="NewField.xaml.cs">
       <DependentUpon>NewField.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NewMap.xaml.cs">
+      <DependentUpon>NewMap.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyDataReadOnly.xaml.cs">
       <DependentUpon>PropertyDataReadOnly.xaml</DependentUpon>
@@ -161,6 +166,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="NewField.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NewMap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -225,6 +234,10 @@
     <ProjectReference Include="..\ColorPickerLib\ColorPicker.csproj">
       <Project>{99e90579-62fc-4898-b168-24f7dbd3a34d}</Project>
       <Name>ColorPicker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GisSmartTools\GisSmartTools.csproj">
+      <Project>{a36b262b-cf56-45f9-aaa4-a7391d472dc1}</Project>
+      <Name>GisSmartTools</Name>
     </ProjectReference>
     <ProjectReference Include="..\MercuryGISControl\MercuryGISControl.csproj">
       <Project>{D7B476B0-4A67-4BDA-A2BE-F92BB35956E6}</Project>

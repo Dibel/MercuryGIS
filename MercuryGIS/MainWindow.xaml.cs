@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,10 @@ using Microsoft.Win32;
 using MercuryGISControl;
 using MercuryGISData;
 using System.IO;
+using GisSmartTools.Data;
+using GisSmartTools;
+using GisSmartTools.Support;
+using GisSmartTools.Geometry;
 
 namespace MercuryGIS
 {
@@ -26,58 +31,62 @@ namespace MercuryGIS
     /// </summary>
     public partial class MainWindow : RibbonWindow
     {
-
-        Layer curLayer;
-        Layer backupLayer;
+        MapProject mappro = null;
+        GeoDatabase gdb = null;
+        //Layer curLayer;
+        //Layer backupLayer;
         public MainWindow()
         {
             InitializeComponent();
+            mapControl.AfterSelectedFeaturesEvent += mapControl_AfterSelectedFeaturesEvent;
+        }
+
+        private void mapControl_AfterSelectedFeaturesEvent(FeatureCollection collenction)
+        {
+            throw new NotImplementedException();
         }
 
         public void OnCheckItem(object sender, RoutedEventArgs e)
         {
-            //listView.Items[0].checkbox;
-            for (int i = 0; i < listView.Items.Count; i++)
+            //treeView.Items[0].checkbox;
+            for (int i = 0; i < treeView.Items.Count; i++)
             {
-                LayerModel model = (LayerModel)listView.Items[i];
-                mapControl.Map.GetLayer(i).IsVisible = model.isChecked;
+                LayerModel model = (LayerModel)treeView.Items[i];
+                mapControl.mapcontent.GetLayerByName(model.Name).visible = model.IsChecked;
+                //mapControl.Map.GetLayer(i).IsVisible = model.IsChecked;
             }
-            mapControl.Refresh();
+            mapControl.mapcontrol_refresh();
         }
 
         private void Open_MouseDown(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Map File (.txt)|*.txt";
-            if (dialog.ShowDialog() == true)
-            {
-                string path = dialog.FileName;
-                mapControl.Map.OpenMap(path);
-                List<Layer> layers = mapControl.Map.GetLayers();
-                for (int i = 0; i < mapControl.Map.LayerCount; i++)
-                {
-                    layers[i].Name = "test";
-                    listView.Items.Add(new LayerModel
-                    {
-                        isChecked = true,
-                        name = layers[i].Name,
-                    });
-                    //items.Add(layers[i].Name);
-                }
-                mapControl.Refresh();
-                this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
-                curLayer = layers[0];
-            }
+            //OpenFileDialog dialog = new OpenFileDialog();
+            //dialog.Filter = "Map File (.txt)|*.txt";
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    string path = dialog.FileName;
+            //    mapControl.Map.OpenMap(path);
+            //    List<Layer> layers = mapControl.Map.GetLayers();
+            //    for (int i = 0; i < mapControl.Map.LayerCount; i++)
+            //    {
+            //        layers[i].Name = "test";
+            //        treeView.Items.Add(new LayerModel(layers[i].Name));
+            //        //items.Add(layers[i].Name);
+            //    }
+            //    mapControl.Refresh();
+            //    this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
+            //    curLayer = layers[0];
+            //}
         }
 
         private void Save_MouseDown(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            if (dialog.ShowDialog() == true)
-            {
-                string path = dialog.FileName;
-                mapControl.Map.SaveMap(path);
-            }
+            //SaveFileDialog dialog = new SaveFileDialog();
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    string path = dialog.FileName;
+            //    mapControl.Map.SaveMap(path);
+            //}
         }
 
         //Export
@@ -99,30 +108,32 @@ namespace MercuryGIS
                 btnSelect.IsChecked = false;
                 btnZoomIn.IsChecked = false;
                 btnzoomOut.IsChecked = false;
-                mapControl.MapMode = Mode.Pan;
-                mapControl.Cursor = ((TextBlock)Resources["Pan"]).Cursor;
+                mapControl.Pan();
+                //mapControl.MapMode = Mode.Pan;
+                //mapControl.Cursor = ((TextBlock)Resources["Pan"]).Cursor;
             }
             else
             {
-                mapControl.MapMode = Mode.None;
-                mapControl.Cursor = Cursors.Arrow;
+                mapControl.ReturnToNone();
+                //mapControl.MapMode = Mode.None;
+                //mapControl.Cursor = Cursors.Arrow;
             }
         }
 
         private void Data_Click(object sender, RoutedEventArgs e)
         {
-            if (mapControl.MapMode == Mode.Edit || mapControl.MapMode == Mode.EditAdd)
+            if (mapControl.mapOpt == MapOptionStatus.Edit)
             {
                 PropertyData form = new PropertyData();
-                int id = listview_selectedindex();
-                form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
+                int id = treeView_selectedindex();
+                //form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
                 form.Show();
             }
             else
             {
                 PropertyDataReadOnly form = new PropertyDataReadOnly();
-                int id = listview_selectedindex();
-                form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
+                int id = treeView_selectedindex();
+                //form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
                 form.Show();
             }
         }
@@ -134,27 +145,29 @@ namespace MercuryGIS
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            throw new NotImplementedException();
             if (btnEdit.IsChecked == true)
             {
                 btnPan.IsChecked = false;
                 btnSelect.IsChecked = false;
                 btnZoomIn.IsChecked = false;
                 btnzoomOut.IsChecked = false;
+                btnEdit.IsChecked = false;
                 // Backup a layer
-                mapControl.MapMode = Mode.Edit;
+                //mapControl.MapMode = Mode.Edit;
                 groupEdit.Visibility = Visibility.Visible;
                 TabElement.IsSelected = true;
             }
             else
             {
-                mapControl.MapMode = Mode.None;
+                //mapControl.MapMode = Mode.None;
             }
         }
 
         private void mapControl_MouseMove(object sender, MouseEventArgs e)
         {
             Point scrPoint = e.GetPosition(mapControl);
-            MPoint mapPoint = mapControl.ToMapPoint(scrPoint);
+            PointD mapPoint = mapControl.ToMapPoint(scrPoint);
             location.Value = "(" + mapPoint.X.ToString() + ", " + mapPoint.Y.ToString() + ")";
         }
 
@@ -166,13 +179,13 @@ namespace MercuryGIS
                 btnSelect.IsChecked = false;
                 btnzoomOut.IsChecked = false;
                 btnEdit.IsChecked = false;
-                mapControl.MapMode = Mode.ZoomIn;
-                mapControl.Cursor = ((TextBlock)Resources["ZoomIn"]).Cursor;
+                mapControl.ZoomIn();
+                //mapControl.MapMode = Mode.ZoomIn;
+                //mapControl.Cursor = ((TextBlock)Resources["ZoomIn"]).Cursor;
             }
             else
             {
-                mapControl.MapMode = Mode.None;
-                mapControl.Cursor = Cursors.Arrow;
+                mapControl.ReturnToNone();
             }
         }
 
@@ -184,33 +197,32 @@ namespace MercuryGIS
                 btnSelect.IsChecked = false;
                 btnZoomIn.IsChecked = false;
                 btnEdit.IsChecked = false;
-                mapControl.MapMode = Mode.ZoomOut;
-                mapControl.Cursor = ((TextBlock)Resources["ZoomOut"]).Cursor;
+                mapControl.ZoomOut();
+                //mapControl.Cursor = ((TextBlock)Resources["ZoomOut"]).Cursor;
             }
             else
             {
-                mapControl.MapMode = Mode.None;
-                mapControl.Cursor = Cursors.Arrow;
+                mapControl.ReturnToNone();
             }
         }
 
         private void Rename_Click(object sender, RoutedEventArgs e)
         {
-            Layer layer = mapControl.Map.GetLayer(listview_selectedindex());
-            InputBox dialog = new InputBox(layer.Name);
-            if (dialog.ShowDialog() == true)
-            {
-                layer.Name = dialog.Text;
-                ((LayerModel)listView.SelectedItem).name = dialog.Text;
-            }
+            //Layer layer = mapControl.Map.GetLayer(treeView_selectedindex());
+            //InputBox dialog = new InputBox(layer.Name);
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    layer.Name = dialog.Text;
+            //    ((LayerModel)treeView.SelectedItem).Name = dialog.Text;
+            //}
         }
 
-        private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void treeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (listview_selectedindex() != -1)
-            {
-                curLayer = mapControl.Map.GetLayer(listview_selectedindex());
-            }
+            //if (treeView_selectedindex() != -1)
+            //{
+            //    curLayer = mapControl.Map.GetLayer(treeView_selectedindex());
+            //}
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e)
@@ -221,13 +233,13 @@ namespace MercuryGIS
                 btnZoomIn.IsChecked = false;
                 btnEdit.IsChecked = false;
                 btnzoomOut.IsChecked = false;
-                mapControl.MapMode = Mode.Select;
-                mapControl.Cursor = Cursors.Cross;
+                mapControl.SelectFeatures();
+                //mapControl.MapMode = Mode.Select;
+                //mapControl.Cursor = Cursors.Cross;
             }
             else
             {
-                mapControl.MapMode = Mode.None;
-                mapControl.Cursor = Cursors.Arrow;
+                mapControl.ReturnToNone();
             }
         }
 
@@ -239,50 +251,58 @@ namespace MercuryGIS
             if (dialog.ShowDialog() == true)
             {
                 string path = dialog.FileName;
-                Layer newLayer = Importer.readshpfile(path);
-                newLayer.Filename = path;
-                newLayer.Name = System.IO.Path.GetFileNameWithoutExtension(path);
-                mapControl.Map.Add(newLayer);
-                listView.Items.Add(new LayerModel
-                {
-                    isChecked = true,
-                    name = newLayer.Name,
-                });
-                mapControl.ScaleToLayer(newLayer);
-                this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
-                curLayer = newLayer;
+                if (path == null || path == "") return;
+                string stylepath = path.Split('.')[0] + ".sld";
+                string layername = mapControl.mapcontent.addLayer(path, stylepath);
+                mappro.dic_datapath.Add(layername, path);
+                mappro.dic_stylepath.Add(layername, stylepath);
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                ShowTreeView(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+                //Layer newLayer = Importer.readshpfile(path);
+                //newLayer.Filename = path;
+                //newLayer.Name = System.IO.Path.GetFileNameWithoutExtension(path);
+                //mapControl.Map.Add(newLayer);
+                //treeView.Items.Add(new LayerModel(newLayer.Name));
+                //mapControl.ScaleToLayer(newLayer);
+                //this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
+                //curLayer = newLayer;
             }
         }
 
         private void btnWholeScreen_Click(object sender, RoutedEventArgs e)
         {
-            mapControl.ScaleToLayer(curLayer);
+            mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+            mapControl.mapcontrol_refresh();
+            //mapControl.ScaleToLayer(curLayer);
         }
 
-        private void listView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void treeView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (listview_selectedindex() != -1)
-            {
-                curLayer = mapControl.Map.GetLayer(listview_selectedindex());
-            }
+            //if (treeView_selectedindex() != -1)
+            //{
+            //    curLayer = mapControl.Map.GetLayer(treeView_selectedindex());
+            //}
         }
 
 
         private void btnAddPointLayer_Click(object sender, RoutedEventArgs e)
         {
-            
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                PointLayer layer = new PointLayer();
-                layer.Name = dialog.Text;
-                mapControl.Map.Add(layer);
-                listView.Items.Add(new LayerModel
-                {
-                    isChecked = true,
-                    name = layer.Name,
-                });
-                curLayer = layer;
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPoint, "d:\\test.shp", "d:\\test.sld");
+                mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
+                mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
+
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                ShowTreeView(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+                //PointLayer layer = new PointLayer();
+                //layer.Name = dialog.Text;
+                //mapControl.Map.Add(layer);
+                //treeView.Items.Add(new LayerModel(layer.Name));
+                //curLayer = layer;
             }
 
         }
@@ -292,15 +312,18 @@ namespace MercuryGIS
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                LineLayer layer = new LineLayer();
-                layer.Name = dialog.Text;
-                mapControl.Map.Add(layer);
-                listView.Items.Add(new LayerModel
-                {
-                    isChecked = true,
-                    name = layer.Name,
-                });
-                curLayer = layer;
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbLineString, "d:\\test.shp", "d:\\test.sld");
+                mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
+                mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
+
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                ShowTreeView(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+                //LineLayer layer = new LineLayer();
+                //layer.Name = dialog.Text;
+                //mapControl.Map.Add(layer);
+                //treeView.Items.Add(new LayerModel(layer.Name));
+                //curLayer = layer;
             }
         }
 
@@ -309,15 +332,18 @@ namespace MercuryGIS
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                PolygonLayer layer = new PolygonLayer();
-                layer.Name = dialog.Text;
-                mapControl.Map.Add(layer);
-                listView.Items.Add(new LayerModel
-                {
-                    isChecked = true,
-                    name = layer.Name,
-                });
-                curLayer = layer;
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPolygon, "d:\\test.shp", "d:\\test.sld");
+                mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
+                mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
+
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                ShowTreeView(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+                //PolygonLayer layer = new PolygonLayer();
+                //layer.Name = dialog.Text;
+                //mapControl.Map.Add(layer);
+                //treeView.Items.Add(new LayerModel(layer.Name));
+                //curLayer = layer;
             }
         }
 
@@ -329,36 +355,42 @@ namespace MercuryGIS
                 groupEdit.Visibility = Visibility.Collapsed;
                 TabStart.IsSelected = true;
                 btnEdit.IsChecked = false;
-                mapControl.MapMode = Mode.None;
-                mapControl.Cursor = Cursors.Arrow;
-                if (curLayer.Filename != null)
+                mapControl.EndEdit();
+                if (gdb.SaveToFile(mapControl.editmanager.layername))
                 {
-                    curLayer.SaveLayer(curLayer.Filename.Substring(0, curLayer.Filename.Length - 4));
-
+                    MessageBox.Show("编辑的数据已保存到文件");
                 }
+                //mapControl.MapMode = Mode.None;
+                //mapControl.Cursor = Cursors.Arrow;
+                //if (curLayer.Filename != null)
+                //{
+                //    curLayer.SaveLayer(curLayer.Filename.Substring(0, curLayer.Filename.Length - 4));
+
+                //}
             }
             else if(result == MessageBoxResult.No)
             {
                 groupEdit.Visibility = Visibility.Collapsed;
                 TabStart.IsSelected = true;
                 btnEdit.IsChecked = false;
-                mapControl.MapMode = Mode.None;
-                mapControl.Cursor = Cursors.Arrow;
-                string path = curLayer.Filename;
-                Layer newLayer = Importer.readshpfile(path);
-                newLayer.Filename = path;
+                mapControl.EndEdit();
+                //mapControl.MapMode = Mode.None;
+                //mapControl.Cursor = Cursors.Arrow;
+                //string path = curLayer.Filename;
+                //Layer newLayer = Importer.readshpfile(path);
+                //newLayer.Filename = path;
+                ////curLayer = newLayer;
+                //mapControl.Map.SetLayer(curLayer, newLayer);
                 //curLayer = newLayer;
-                mapControl.Map.SetLayer(curLayer, newLayer);
-                curLayer = newLayer;
-                mapControl.ScaleToLayer(newLayer);
+                //mapControl.ScaleToLayer(newLayer);
             }
         }
 
         private void btnAddElement_Click(object sender, RoutedEventArgs e)
         {
-            mapControl.CurLayer = curLayer;
-            mapControl.MapMode = Mode.EditAdd;
-            mapControl.Cursor = Cursors.Cross;
+            //mapControl.CurLayer = curLayer;
+            //mapControl.MapMode = Mode.EditAdd;
+            //mapControl.Cursor = Cursors.Cross;
         }
 
         private void btnMapping_Click(object sender, RoutedEventArgs e)
@@ -396,90 +428,141 @@ namespace MercuryGIS
 
         }
 
+        //文本注记
         private void btnMapLable_Click(object sender, RoutedEventArgs e)
         {
-            SelectField form = new SelectField(curLayer.GetFields());
-            if (form.ShowDialog() == true)
-            {
-                curLayer.IsLabelShown = true;
-                curLayer.LabelField = form.field;
-                mapControl.Refresh();
-            }
+            //SelectField form = new SelectField(curLayer.GetFields());
+            //if (form.ShowDialog() == true)
+            //{
+            //    curLayer.IsLabelShown = true;
+            //    curLayer.LabelField = form.field;
+            //    mapControl.Refresh();
+            //}
         }
 
         private void btnQueryByAttri_Click(object sender, RoutedEventArgs e)
         {
-            QueryAttribute form = new QueryAttribute(mapControl);
-            form.Show();
+            //QueryAttribute form = new QueryAttribute(mapControl);
+            //form.Show();
         }
 
         private void btnQueryByLocat_Click(object sender, RoutedEventArgs e)
         {
-            mapControl.MapMode = Mode.Select;
-            mapControl.Cursor = Cursors.Cross;
+            mapControl.SelectFeatures();
             
         }
 
         private void mapControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (mapControl.MapMode == Mode.Select)
-            {
-                mapControl.Cursor = Cursors.Arrow;
-                QueryResult form = new QueryResult(mapControl);
-                form.Show();
-            }
+            //if (mapControl.MapMode == Mode.Select)
+            //{
+            //    mapControl.Cursor = Cursors.Arrow;
+            //    QueryResult form = new QueryResult(mapControl);
+            //    form.Show();
+            //}
         }
 
         private void btnSymbolize_Click(object sender, RoutedEventArgs e)
         {
-            Symbolize form = new Symbolize(mapControl);
-            form.Show();
+            //Symbolize form = new Symbolize(mapControl);
+            //form.Show();
         }
 
+        //调整图层顺序
         private void MoveUp_Click(object sender, RoutedEventArgs e)
         {
-            int id = listview_selectedindex();
+            int id = treeView_selectedindex();
             if (id > 0)
             {
-                var temp = listView.Items[id];
-                listView.Items.RemoveAt(id);
-                listView.Items.Insert(id - 1, temp);
-                mapControl.Map.MoveUpOneStep(id);
-                mapControl.Refresh();
+                LayerModel temp = (LayerModel)treeView.Items[id];
+                treeView.Items.RemoveAt(id);
+                treeView.Items.Insert(id - 1, temp);
+                mapControl.mapcontent.MoveLayerTo(temp.Name, id - 1);
+                mapControl.mapcontrol_refresh();
+                //mapControl.Map.MoveUpOneStep(id);
+                //mapControl.Refresh();
             }
         }
 
         private void MoveDown_Click(object sender, RoutedEventArgs e)
         {
-            int id = listview_selectedindex();
-            if (id < listView.Items.Count - 1)
+            int id = treeView_selectedindex();
+            if (id < treeView.Items.Count - 1)
             {
-                var temp = listView.Items[id];
-                listView.Items.RemoveAt(id);
-                listView.Items.Insert(id + 1, temp);
-                mapControl.Map.MoveDownOneStep(id);
-                mapControl.Refresh();
+                LayerModel temp = (LayerModel)treeView.Items[id];
+                treeView.Items.RemoveAt(id);
+                treeView.Items.Insert(id + 1, temp);
+                mapControl.mapcontent.MoveLayerTo(temp.Name, id + 1);
+                mapControl.mapcontrol_refresh();
+                //mapControl.Map.MoveDownOneStep(id);
+                //mapControl.Refresh();
             }
         }
 
         private void RibbonWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             double height = row.ActualHeight;
-            double width = this.Width - listView.RenderSize.Width;
+            double width = this.Width - treeView.RenderSize.Width;
             mapControl.Height = height;
             mapControl.Width = width;
         }
 
-        private int listview_selectedindex()
+        private int treeView_selectedindex()
         {
-            var item = listView.SelectedItem;
-            return listView.Items.IndexOf(item);
+            var item = treeView.SelectedItem;
+            return treeView.Items.IndexOf(item);
+        }
+
+        private void New_MouseDown(Object sender, RoutedEventArgs e)
+        {
+            NewMap dialog = new NewMap();
+            if (dialog.ShowDialog() == true)
+            {
+                string name = dialog.mapName;
+                //创建工程对象
+                mappro = MapProject.CreateMapProject(name);
+                //创建mapcontent对象
+                mapcontent mapcontent = mapcontent.createnewmapcontentofnolayer(name);
+                gdb = mapcontent.gdb;
+                mapControl.mapcontent = mapcontent;
+                mapControl.mapcontrol_refresh();
+                this.Title = "Mercury GIS - " + name;
+                //刷新图层树
+                //ShowTreeView(mapcontent);
+            }
+        }
+
+        private void ShowTreeView(mapcontent mapcontent)
+        {
+            //TreeNode mapnode = new TreeNode(mapcontent.name);
+            //mapnode.Checked = true;
+            List<GisSmartTools.Support.Layer> layerlist = mapcontent.layerlist;
+            LayerModel[] nodes = new LayerModel[layerlist.Count];
+            //TreeNode[] childnodes = new TreeNode[layerlist.Count];
+
+            treeView.Items.Clear();
+            for (int i = 0; i < layerlist.Count; i++)
+            {
+                nodes[i] = new LayerModel(layerlist[i].layername);
+                //nodes[i].Nodes.Add(GetTreeViewStyle(layerlist[i].style));
+                if (layerlist[i].visible) nodes[i].IsChecked = true;
+                else nodes[i].IsChecked = false;
+                
+
+                if (layerlist[i].visible) nodes[i].IsChecked = true;
+                treeView.Items.Add(nodes[i]);
+            }
+            
+            //treeView.AddRange(nodes);
+            //treeView1.Nodes.Clear();
+            //treeView1.Nodes.Add(mapnode);
+            //treeView1.ExpandAll();
         }
     }
 
-    class LayerModel
-    {
-        public bool isChecked { get; set; }
-        public string name { get; set; }
-    }
+    //class LayerModel
+    //{
+    //    public bool isChecked { get; set; }
+    //    public string name { get; set; }
+    //}
 }

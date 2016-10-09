@@ -1,0 +1,250 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using GisSmartTools;
+using OSGeo.OGR;
+using GisSmartTools.Geometry;
+
+namespace GisSmartTools.Data
+{
+    /**
+     * GeoDataBase
+     * 空间数据库类
+     * 对包含空间数据和属性数据元信息的整体封装，提供存取基本地理数据的功能
+     * 整存整取
+     * 暂时只支持一个shapefile中只有一个图层的情况
+     * 必须通过GetGeoDatabase（）获取实例，不能直接新建实例
+     * 待实现方法：
+     * 所有方法
+     * */
+    public class GeoDatabase
+    {
+        public Dictionary<string,FeatureSource> featureSources;     //数据
+        public Dictionary<string, string> pathRef;  //表名和文件路径的对应
+
+        private GeoDatabase()
+        {
+            featureSources = new Dictionary<string, FeatureSource>();
+            pathRef = new Dictionary<string, string>();
+        }
+
+        //给定路径，创建GeoDatabase实例,并从数据库中读取所有图层的schema,必须不包含同名表，否则返回null
+        public static GeoDatabase GetGeoDatabase(List<string> pathList)
+        {
+            GeoDatabase resultDB = new GeoDatabase();
+            foreach (String path in pathList)
+            {
+                FeatureSource tmpSrc = GeoDatabase.GetFeaturesource(path);
+                if (resultDB.pathRef.ContainsKey(tmpSrc.schema.name)) return null;
+                resultDB.pathRef.Add(tmpSrc.schema.name, path);
+                resultDB.featureSources.Add(tmpSrc.schema.name, tmpSrc);
+            }
+            return resultDB;
+        }
+
+        //读取一个shapefile文件并将其中的第一个图层添加到当前GeoDatabase
+        public bool AddLayer(String path)
+        {
+            FeatureSource tmpSrc = GeoDatabase.GetFeaturesource(path);
+            if (this.pathRef.ContainsKey(tmpSrc.schema.name)) return false;
+            this.pathRef.Add(tmpSrc.schema.name, path);
+            this.featureSources.Add(tmpSrc.schema.name, tmpSrc);
+            return true;
+        }
+
+
+        #region FunctionsRead
+        //从文件中读取数据
+        public static FeatureSource GetFeaturesource(String path)
+        {
+            OSGeo.OGR.DataSource ds = GetOGRDataSource(path);
+
+            //init schema
+            OSGeo.OGR.Layer layer = ds.GetLayerByIndex(0);
+            OSGeo.OGR.FeatureDefn fd = layer.GetLayerDefn();
+            int fieldcount = fd.GetFieldCount();
+            Dictionary<String, FieldDefn> tmpField = new Dictionary<string,FieldDefn>();
+            for (int i = 0; i < fieldcount; ++i)
+            {
+                OSGeo.OGR.FieldDefn field = fd.GetFieldDefn(i);
+                tmpField.Add(field.GetName(), field);
+            }
+            Schema rs = new Schema(layer.GetName(),layer.GetGeomType(), new  GisSmartTools.RS.SRS(layer.GetSpatialRef()), tmpField);
+            //get featurecollection
+            FeatureCollection fc = GetFeatureCollection(layer,rs);
+
+            return new FeatureSource(rs, fc);
+        }
+
+        //get a ogr datasorce by path string
+        private static OSGeo.OGR.DataSource GetOGRDataSource(String path)
+        {
+            OSGeo.OGR.Ogr.RegisterAll();
+            OSGeo.OGR.Driver dr = OSGeo.OGR.Ogr.GetDriverByName("ESRI shapefile");
+            if (dr == null) return null;
+            OSGeo.OGR.DataSource ds = dr.Open(path, 1);
+            return ds;
+        }
+
+        private static FeatureCollection GetFeatureCollection(OSGeo.OGR.Layer layer,GisSmartTools.Data.Schema schema)
+        {
+            FeatureCollection fc = new FeatureCollection();
+            OSGeo.OGR.Feature feature;
+            OSGeo.OGR.FeatureDefn posDefn = layer.GetLayerDefn();
+            int fieldCount = posDefn.GetFieldCount();
+            int iField = 0;
+
+            //read all the features in layer
+            while ((feature = layer.GetNextFeature()) != null)
+            {
+                OSGeo.OGR.Geometry geometry = feature.GetGeometryRef();
+                GisSmartTools.Data.Feature feat = new Feature(feature.GetFID(), schema,null);
+                //get and save feature's attributes
+                for (iField = 0; iField < fieldCount; iField++)
+                {
+                    OSGeo.OGR.FieldDefn oField = posDefn.GetFieldDefn(iField);
+                    Object objAttr ;
+                    FieldType ft = oField.GetFieldType();
+                    switch(ft)
+                    {
+                        case FieldType.OFTString:
+                            objAttr=feature.GetFieldAsString(iField);
+                            break;
+                        case FieldType.OFTInteger:
+                            objAttr=feature.GetFieldAsInteger(iField);
+                            break;
+                        case FieldType.OFTReal:
+                            objAttr=feature.GetFieldAsDouble(iField);
+                            break;
+                        case FieldType.OFTWideString:
+                            objAttr=feature.GetFieldAsString(iField);
+                            break;
+                        case FieldType.OFTStringList:
+                            objAttr=feature.GetFieldAsStringList(iField);
+                            break;
+                        case FieldType.OFTIntegerList:
+                            int outCount;
+                            objAttr=feature.GetFieldAsIntegerList(iField,out outCount);
+                            break;
+                        case FieldType.OFTRealList:
+                            int outCount2;
+                            objAttr=feature.GetFieldAsDoubleList(iField,out outCount2);
+                            break;
+                        case FieldType.OFTWideStringList:
+                            objAttr=feature.GetFieldAsStringList(iField);
+                            break;
+                        default:
+                            objAttr=feature.GetFieldAsString(iField);
+                            break;
+                    }
+                    feat.AddAttribute(oField.GetName(), objAttr);
+                }
+
+                //get geometry
+                OSGeo.OGR.wkbGeometryType goetype = geometry.GetGeometryType();
+                if (geometry != null)
+                {
+                    switch (goetype)
+                    {
+                        case wkbGeometryType.wkbPoint:
+                            if (geometry != null && goetype == wkbGeometryType.wkbPoint)
+                            {
+                                feat.geometry = new PointD(geometry.GetX(0), geometry.GetY(0));
+                            }
+                            //add feature to featureCollection
+                            fc.InsertFeature(feat);
+                            break;
+                        case wkbGeometryType.wkbLineString:
+                            List<PointD> pointlist = new List<PointD>();
+                            int pointcount=geometry.GetPointCount();
+                            for (int k = 0; k < pointcount; k++)
+                            {
+                                pointlist.Add(new PointD(geometry.GetX(k), geometry.GetY(k)));
+                            }
+                            feat.geometry = new SimplePolyline(pointlist);
+                            //add feature to featureCollection
+                            fc.InsertFeature(feat);
+                            break;
+                        case wkbGeometryType.wkbPolygon:
+                            List<PointD> pointlist2 = new List<PointD>();
+                            OSGeo.OGR.Geometry ring1 = geometry.GetGeometryRef(0);
+                            int pointcount2=ring1.GetPointCount();
+                            for (int k = 0; k < pointcount2; k++)
+                            {
+                                pointlist2.Add(new PointD(ring1.GetX(k), ring1.GetY(k)));
+                            }
+                            feat.geometry = new SimplePolygon(pointlist2);
+                            //add feature to featureCollection
+                            fc.InsertFeature(feat);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+            }
+
+            return fc;
+        }
+
+
+        #endregion FunctionsRead
+
+
+
+        #region savedata
+
+        //将内存中所有图层的数据完全保存到数据库中
+        public Boolean SaveAll()
+        {
+            Boolean flag = true;
+            for (int i = 0; i < this.pathRef.Count; ++i)
+            {
+                flag=flag&&SaveToFile(this.pathRef.ElementAt(i).Key);
+            }
+            return flag;
+        }
+
+        //将内存中一个图层的数据另存为在文件中
+        public Boolean SaveAsToFile(String name, String path)
+        {
+            return true;
+        }
+
+        //将内存中一个图层的数据保存在文件中
+        public Boolean SaveToFile(String name)
+        {
+            String path;
+            if(!(this.pathRef.TryGetValue(name,out path)))return false;
+            return SaveAsToFile(name,path);
+        }
+
+
+        #endregion savedata
+
+        #region events
+        //事件
+        public delegate void TableappendedHandle(object sender, string[] schemaName);
+        public event TableappendedHandle Tableappended;
+        private void RaiseTableappended(object sender, string[] schemaName)
+        {
+            if (Tableappended != null)
+            {
+                Tableappended(sender, schemaName);
+            }
+        }
+
+        public delegate void TableDeletedHandle(object sender, string[] schemaName);
+        public event TableDeletedHandle TableDeleted;
+        private void RaiseTableDeleted(object sender, string[] schemaName)
+        {
+            if (TableDeleted!= null)
+            {
+                TableDeleted(sender, schemaName);
+            }
+        }
+        #endregion events
+
+    }
+}
