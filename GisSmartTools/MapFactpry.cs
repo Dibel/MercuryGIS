@@ -126,7 +126,7 @@ namespace GisSmartTools.MapFactory
             base.PaintAdditional(g);
             foreach(Layer layer in mapcontent.layerlist)
             {
-                g.DrawString(layer.layername, SystemFonts.DefaultFont, Brushes.Black, new PointF(position.X, cur_y));
+                g.DrawString(layer.Layername, SystemFonts.DefaultFont, Brushes.Black, new PointF(position.X, cur_y));
                 cur_y += 25;
                 Style style = layer.style;
                 foreach(RenderRule rule in style.rulelist)

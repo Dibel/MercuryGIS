@@ -121,7 +121,7 @@
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="图层操作">
                     <Fluent:DropDownButton x:Name="btnAddLayer" Header="添加图层"
-						LargeIcon="Resources/添加图层.jpg" ClosePopupOnMouseDown="True" ClosePopupOnMouseDownDelay="0">
+						LargeIcon="Resources/添加图层.jpg" ClosePopupOnMouseDown="True">
                         <MenuItem x:Name="btnAddPointLayer" Header="添加点图层" Click="btnAddPointLayer_Click"></MenuItem>
                         <MenuItem x:Name="btnAddLineLayer" Header="添加线图层" Click="btnAddLineLayer_Click"></MenuItem>
                         <MenuItem x:Name="btnAddPolygonLayer" Header="添加面图层" Click="btnAddPolygonLayer_Click"></MenuItem>
@@ -286,7 +286,7 @@
                         </xcad:LayoutAnchorablePane>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument ContentId="document1" Title="Document 1" >
-                                <GisSmartTools:MapControlWPF x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left"  VerticalAlignment="Top" ClipToBounds="True"/>
+                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Left" VerticalAlignment="Top" ClipToBounds="True"/>
                                 <!--<MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left"  VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>-->
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>

@@ -942,7 +942,7 @@ namespace GisSmartTools
         {
             foreach (Layer ly in this.mapcontent.layerlist)
             {
-                if (ly.layername.Equals(name)) this.focuslayer = ly;
+                if (ly.Layername.Equals(name)) this.focuslayer = ly;
             }
 
         }

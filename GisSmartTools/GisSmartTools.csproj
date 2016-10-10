@@ -126,16 +126,17 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Cross.ico" />
-    <EmbeddedResource Include="Resource\PanUp.ico" />
-    <EmbeddedResource Include="Resource\ZoomIn.ico" />
-    <EmbeddedResource Include="Resource\ZoomOut.ico" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MapControlWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Pan.cur" />
+    <Resource Include="Resources\ZoomIn.cur" />
+    <Resource Include="Resources\ZoomOut.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

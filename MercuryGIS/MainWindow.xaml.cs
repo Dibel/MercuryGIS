@@ -46,15 +46,17 @@ namespace MercuryGIS
             throw new NotImplementedException();
         }
 
-        public void OnCheckItem(object sender, RoutedEventArgs e)
+        public void OnCheckItem(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             //treeView.Items[0].checkbox;
-            for (int i = 0; i < treeView.Items.Count; i++)
-            {
-                LayerModel model = (LayerModel)treeView.Items[i];
-                mapControl.mapcontent.GetLayerByName(model.Name).visible = model.IsChecked;
-                //mapControl.Map.GetLayer(i).IsVisible = model.IsChecked;
-            }
+            LayerModel model = (LayerModel)sender;
+            mapControl.mapcontent.GetLayerByName(model.Name).visible = model.IsChecked;
+            //for (int i = 0; i < treeView.Items.Count; i++)
+            //{
+            //    LayerModel model = (LayerModel)treeView.Items[i];
+            //    mapControl.mapcontent.GetLayerByName(model.Name).visible = model.IsChecked;
+            //    //mapControl.Map.GetLayer(i).IsVisible = model.IsChecked;
+            //}
             mapControl.mapcontrol_refresh();
         }
 
@@ -145,18 +147,24 @@ namespace MercuryGIS
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             if (btnEdit.IsChecked == true)
             {
-                btnPan.IsChecked = false;
-                btnSelect.IsChecked = false;
-                btnZoomIn.IsChecked = false;
-                btnzoomOut.IsChecked = false;
-                btnEdit.IsChecked = false;
-                // Backup a layer
-                //mapControl.MapMode = Mode.Edit;
-                groupEdit.Visibility = Visibility.Visible;
-                TabElement.IsSelected = true;
+                
+                StartEdit dialog = new StartEdit(mapControl.mapcontent);
+                if (dialog.ShowDialog() == true)
+                {
+                    mapControl.StartEdit(dialog.selectedlayer);
+                    btnPan.IsChecked = false;
+                    btnSelect.IsChecked = false;
+                    btnZoomIn.IsChecked = false;
+                    btnzoomOut.IsChecked = false;
+                    btnEdit.IsChecked = false;
+                    // Backup a layer
+                    //mapControl.MapMode = Mode.Edit;
+                    groupEdit.Visibility = Visibility.Visible;
+                    TabElement.IsSelected = true;
+                }
             }
             else
             {
@@ -291,7 +299,7 @@ namespace MercuryGIS
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPoint, "d:\\test.shp", "d:\\test.sld");
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPoint, "D:\\test.shp", "D:\\test.sld");
                 mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
                 mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
 
@@ -543,7 +551,8 @@ namespace MercuryGIS
             treeView.Items.Clear();
             for (int i = 0; i < layerlist.Count; i++)
             {
-                nodes[i] = new LayerModel(layerlist[i].layername);
+                nodes[i] = new LayerModel(layerlist[i].Layername);
+                nodes[i].PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(OnCheckItem);
                 //nodes[i].Nodes.Add(GetTreeViewStyle(layerlist[i].style));
                 if (layerlist[i].visible) nodes[i].IsChecked = true;
                 else nodes[i].IsChecked = false;

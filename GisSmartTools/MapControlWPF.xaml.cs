@@ -17,6 +17,7 @@ using GisSmartTools.Geometry;
 using GisSmartTools.RS;
 using GisSmartTools.Support;
 using GisSmartTools.Topology;
+using System.Threading;
 
 namespace GisSmartTools
 {
@@ -58,11 +59,11 @@ namespace GisSmartTools
         private System.Drawing.Rectangle screen_rect;
 
         private Point Editing_MouseLocation = new Point();
-        private Cursor mCur_Cross = new Cursor(@"D:\Code\GisSmartTools\GisSmartTools\Resource\cross.cur");
+        private Cursor mCur_Cross = Cursors.Cross;
         //private Cursor nCur_Cross = new Cursor(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("MyMapObjects.Resources.Cross.ico"));
-        private Cursor mCur_ZoomIn = new Cursor(@"D:\Code\GisSmartTools\GisSmartTools\Resource\ZoomIn.cur");
-        private Cursor mCur_ZoomOut = new Cursor(@"D:\Code\GisSmartTools\GisSmartTools\Resource\ZoomOut.cur");
-        private Cursor mCur_PanUp = new Cursor(@"D:\Code\GisSmartTools\GisSmartTools\Resource\Pan.cur");
+        private Cursor mCur_ZoomIn;
+        private Cursor mCur_ZoomOut;
+        private Cursor mCur_PanUp;
 
         //private Cursor mCur_Cross = new Cursor("Resource.Cross.ico");
         ////private Cursor nCur_Cross = new Cursor(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("MyMapObjects.Resources.Cross.ico"));
@@ -145,8 +146,11 @@ namespace GisSmartTools
             this.MouseMove += new MouseEventHandler(pictureBox1_MouseMove);
             this.MouseUp += new MouseButtonEventHandler(pictureBox1_MouseUp);
 
+            mCur_PanUp = ((TextBlock)Resources["Pan"]).Cursor;
+            mCur_ZoomIn = ((TextBlock)Resources["ZoomIn"]).Cursor;
+            mCur_ZoomOut = ((TextBlock)Resources["ZoomOut"]).Cursor;
             //Fixed size
-            bitmap_X = 500;
+            bitmap_X = 800;
             bitmap_Y = 500;
         }
 
@@ -194,6 +198,7 @@ namespace GisSmartTools
                         paintLineFeaturebyRule(feature, SelectRendererRule(feature, style), rstransform);
                         break;
                     case OSGeo.OGR.wkbGeometryType.wkbMultiLineString:
+                        paintMutiLinebyRule(feature, SelectRendererRule(feature, style), rstransform);
                         break;
                     case OSGeo.OGR.wkbGeometryType.wkbPolygon:
                         paintpolygonFeaturebyRule(feature, SelectRendererRule(feature, style), rstransform);
@@ -1040,6 +1045,7 @@ namespace GisSmartTools
                             screen_rect = new System.Drawing.Rectangle((int)rect_x1, (int)rect_y1, (int)rect_width, (int)rect_width);
                             tempbmp.DrawRectangle((int)rect_x1, (int)rect_y1, (int)rect_x2, (int)rect_y2, Colors.Black);
                         }
+                        Thread.Sleep(10);
                         this.Source = tempbmp;
                     }
                     break;
@@ -1136,7 +1142,7 @@ namespace GisSmartTools
                     }
                     break;
             }
-            RaiseMouseMove_PictureBoxEvent(sender, e);
+            //RaiseMouseMove_PictureBoxEvent(sender, e);
 
         }
 
@@ -1310,7 +1316,6 @@ namespace GisSmartTools
                 bmp.Blit(rect, temp_textbmp, rect);
             }
             globalbmp = bmp;
-            this.Source = null;
             this.Source = globalbmp;
             //this.InvalidateVisual();
         }
@@ -1355,7 +1360,7 @@ namespace GisSmartTools
         public void Pan()
         {
             MapOption = MapOptionStatus.Pan;
-            this.Cursor = Cursors.Hand;
+            this.Cursor = mCur_PanUp;
             //this.Cursor = mCur_PanUp;
         }
         public void Identify()
@@ -1474,7 +1479,7 @@ namespace GisSmartTools
         {
             foreach (Layer ly in this.mapcontent.layerlist)
             {
-                if (ly.layername.Equals(name)) this.focuslayer = ly;
+                if (ly.Layername.Equals(name)) this.focuslayer = ly;
             }
 
         }

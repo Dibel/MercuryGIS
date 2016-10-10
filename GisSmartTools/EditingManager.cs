@@ -43,7 +43,7 @@ namespace GisSmartTools
 
         public EditingManager(Layer layer,RS.RSTransform rstransfrom)
         {
-            this.layername = layer.layername;
+            this.layername = layer.Layername;
             this.EditingFeaturesource = layer.featuresource;
             //featurecollection_finishededit = new FeatureCollection();
             this.editingpoints = new List<PointD>();

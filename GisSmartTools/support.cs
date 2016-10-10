@@ -437,11 +437,23 @@ namespace GisSmartTools.Support
     {
         public string descriptor;
         public FeatureSource featuresource;
-        public string layername;
+        private string layername;
         public Style style;
         public bool sectable = true;
         public bool visible = true;
 
+        public String Layername
+        {
+            get
+            {
+                return layername;
+            }
+
+            set
+            {
+                layername = value;
+            }
+        }
 
         public Layer(string layername, FeatureSource featuresource, Style style)
         {
@@ -536,7 +548,7 @@ namespace GisSmartTools.Support
             {
                 for(int i=0;i<layerlist.Count;i++)
                 {
-                    if(layerlist[i].layername.Equals(layername))
+                    if(layerlist[i].Layername.Equals(layername))
                     {
                         layerlist.RemoveAt(i);
                         return true;
@@ -582,7 +594,7 @@ namespace GisSmartTools.Support
             {
                 for (int i = 0; i < layerlist.Count; i++)
                 {
-                    if (layerlist[i].layername.Equals(layername))
+                    if (layerlist[i].Layername.Equals(layername))
                     {
                         return layerlist[i];
                     }
@@ -657,7 +669,7 @@ namespace GisSmartTools.Support
             ///保存style数据 保存到mappro中存储的路径
             foreach (Layer layer in this.layerlist)
             {
-                string name = layer.layername;
+                string name = layer.Layername;
                 string stylepath = dict_stylepath[name];
                 if (stylepath != null || stylepath != "")
                 {
