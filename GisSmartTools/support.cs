@@ -52,7 +52,6 @@ namespace GisSmartTools.Support
         public float size = 10;
         public double offset_x = 0;
         public double offset_y = 0;
-        [NonSerialized()]
         public Color color;
 
         public pointsymbolizer()
@@ -77,7 +76,6 @@ namespace GisSmartTools.Support
         public bool visible = true;
         public System.Drawing.Drawing2D.DashStyle linestyle = System.Drawing.Drawing2D.DashStyle.Solid;
         public float width = 2;
-        [NonSerialized()]
         public Color color;
         public linesymbolizer()
         {
@@ -99,9 +97,7 @@ namespace GisSmartTools.Support
         //  public int sign = Symbolizer.polygonsymbolizer;
         public string label = "";
         public bool visible = true;
-        [NonSerialized()]
         public Color strokecolor;
-        [NonSerialized()]
         public Color fillcolor;
         public float strokewidth = 2;
         public polygonsymbolizer()
@@ -138,7 +134,6 @@ namespace GisSmartTools.Support
         public bool visible = false;
         [NonSerialized()]
         public PortableFontDesc font;
-        [NonSerialized()]
         public Color color = Colors.Black;
         public float offset_x = 0;
         public float offset_y = 5;

@@ -54,8 +54,8 @@ namespace GisSmartTools
         
         //private Cursor mCur_edit_select = new Cursor(typeof(GisSmartTools.MapControl), "Resource.edit_select.ico");
         //画选中的feature的预定义颜色
-        private Color selectedFillColor = Color.LightSkyBlue;
-        private Color selectedStrokeColor = Color.Blue;
+        //private Color selectedFillColor = Color.LightSkyBlue;
+        //private Color selectedStrokeColor = Color.Blue;
 
         //状态信息
         private MapOptionStatus MapOption = MapOptionStatus.none;
@@ -238,13 +238,14 @@ namespace GisSmartTools
         /// <param name="collection"></param>
         public Bitmap paintadditionalfeaturecollection(FeatureCollection collection)
         {
-            Bitmap tempbmp = paintadditionalfeaturecollection(collection, this.selectedFillColor, this.selectedStrokeColor);
-            if (tempbmp != null)
-            {
-                pictureBox1.Image = tempbmp;
-                pictureBox1.Refresh();
-            }
-            return tempbmp;
+            //Bitmap tempbmp = paintadditionalfeaturecollection(collection, this.selectedFillColor, this.selectedStrokeColor);
+            //if (tempbmp != null)
+            //{
+            //    pictureBox1.Image = tempbmp;
+            //    pictureBox1.Refresh();
+            //}
+            //return tempbmp;
+            return new Bitmap(1, 1);
         }
 
         public Bitmap paintadditionalfeaturecollection(FeatureCollection collection, Color FillColor, Color StrokeColor)

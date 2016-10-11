@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using GisSmartTools.Support;
+using System.Windows.Media;
+
 namespace GisSmartTools.MapFactory
 {
 
@@ -35,7 +37,7 @@ namespace GisSmartTools.MapFactory
     {
         public string text = "标题";
         public Font font = SystemFonts.DefaultFont;
-        public Color color = Color.Black;
+        public Color color = Colors.Black;
         public MapTitle(string text,PointF position)
         {
             this.text = text;
@@ -45,8 +47,8 @@ namespace GisSmartTools.MapFactory
         public override void PaintAdditional(Graphics g)
         {
             base.PaintAdditional(g);
-            Brush brush = new SolidBrush(color);
-            g.DrawString(text, font, brush, position);
+            //Brush brush = new SolidBrush(color);
+            //g.DrawString(text, font, brush, position);
         }
 
     }
@@ -126,7 +128,7 @@ namespace GisSmartTools.MapFactory
             base.PaintAdditional(g);
             foreach(Layer layer in mapcontent.layerlist)
             {
-                g.DrawString(layer.Layername, SystemFonts.DefaultFont, Brushes.Black, new PointF(position.X, cur_y));
+                //g.DrawString(layer.Layername, SystemFonts.DefaultFont, Brushes.Black, new PointF(position.X, cur_y));
                 cur_y += 25;
                 Style style = layer.style;
                 foreach(RenderRule rule in style.rulelist)

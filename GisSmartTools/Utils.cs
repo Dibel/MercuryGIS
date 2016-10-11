@@ -38,7 +38,7 @@ namespace GisSmartTools.Data
             int int_Blue = (int_Red + int_Green > 400) ? 0 : 400 - int_Red - int_Green;
             int_Blue = (int_Blue > 255) ? 255 : int_Blue;
 
-            return Color.FromRgb((byte)int_Red, (byte)int_Green, (byte)int_Blue);
+            return new Color (255, (byte)int_Red, (byte)int_Green, (byte)int_Blue);
         }
         public static int colorindex = 0;
         public static Color[] colorarray = new Color[]
@@ -77,16 +77,16 @@ namespace GisSmartTools.Data
         public static Color[] GetLinearColorList(Color startcolor,Color endcolor,int num)
         {
             Color[] colorarray = new Color[num];
-            int internal_A = (endcolor.A - startcolor.A) / (num-1);
-            int internal_R = (endcolor.R- startcolor.R) / (num - 1);
-            int internal_G = (endcolor.G - startcolor.G) / (num - 1);
-            int internal_B = (endcolor.B - startcolor.B) / (num - 1);
+            int internal_A = (endcolor.a - startcolor.a) / (num-1);
+            int internal_R = (endcolor.r- startcolor.r) / (num - 1);
+            int internal_G = (endcolor.g - startcolor.g) / (num - 1);
+            int internal_B = (endcolor.b - startcolor.b) / (num - 1);
             colorarray[0] = startcolor;
             colorarray[num - 1] = endcolor;
             for(int i = 1;i<num-1;i++)
             {
-                colorarray[i] = Color.FromArgb((byte)(startcolor.A + i * internal_A),
-                    (byte)(startcolor.R+i*internal_R), (byte)(startcolor.G+i*internal_G), (byte)(startcolor.B+i*internal_B));
+                colorarray[i] = new Color((byte)(startcolor.a + i * internal_A),
+                    (byte)(startcolor.r+i*internal_R), (byte)(startcolor.g+i*internal_G), (byte)(startcolor.b+i*internal_B));
             }
             return colorarray;
         }

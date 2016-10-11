@@ -266,7 +266,7 @@ namespace GisSmartTools
                     Object text = "";
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
-                        temp_textbmp.DrawString(screenPointF.X + (int)textsym.offset_x, screenPointF.Y + (int)textsym.offset_y, textsym.color, textsym.font, text.ToString());
+                        temp_textbmp.DrawString(screenPointF.X + (int)textsym.offset_x, screenPointF.Y + (int)textsym.offset_y, (System.Windows.Media.Color)textsym.color, textsym.font, text.ToString());
                     }
                 }
             }
@@ -430,7 +430,7 @@ namespace GisSmartTools
                     ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(polygon.maxX, polygon.maxY)));
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
-                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), textsym.color, textsym.font, text.ToString());
+                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, textsym.font, text.ToString());
                         //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
                     }
                     //textbrush.Dispose();
@@ -522,7 +522,7 @@ namespace GisSmartTools
                     ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(line.maxX, line.maxY)));
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
-                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), textsym.color, textsym.font, text.ToString());
+                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, textsym.font, text.ToString());
                         //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
                     }
                     //textbrush.Dispose();
