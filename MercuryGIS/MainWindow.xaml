@@ -109,37 +109,39 @@
             <Fluent:RibbonTabItem x:Name="TabStart" Header="开始">
                 <Fluent:RibbonGroupBox Header="地图模式">
                     <Fluent:ToggleButton x:Name="btnSelect" Header="选择"
-						LargeIcon="Resources/选择.jpg" Click="btnSelect_Click"/>
+						LargeIcon="Resources/Select.png" Click="btnSelect_Click"/>
                     <Fluent:ToggleButton x:Name="btnPan" Header="漫游"
-						LargeIcon="Resources/漫游.jpg" Click="btnPan_Click"/>
+						LargeIcon="Resources/Pan.png" Click="btnPan_Click"/>
                     <Fluent:ToggleButton x:Name="btnEdit" Header="编辑"
-						LargeIcon="Resources/编辑.jpg" Click="btnEdit_Click"/>
+						LargeIcon="Resources/StartEdit.png" Click="btnEdit_Click"/>
                     <Fluent:Button x:Name="btnWholeScreen" Header="显示全图"
-						LargeIcon="Resources/显示全图.jpg" Click="btnWholeScreen_Click"/>
-                    <Fluent:ToggleButton x:Name="btnZoomIn" Header="放大" Icon="Resources/放大.jpg" SizeDefinition="Small"  Click="btnZoomIn_Click"/>
-                    <Fluent:ToggleButton x:Name="btnzoomOut" Header="缩小" Icon="Resources/缩小.jpg" SizeDefinition="Small" Click="btnzoomOut_Click"/>
+						LargeIcon="Resources/WholeMap.png" Click="btnWholeScreen_Click"/>
+                    <Fluent:ToggleButton x:Name="btnZoomIn" Header="放大" Icon="Resources/ZoomIn.png" SizeDefinition="Small"  Click="btnZoomIn_Click"/>
+                    <Fluent:ToggleButton x:Name="btnzoomOut" Header="缩小" Icon="Resources/ZoomOut.png" SizeDefinition="Small" Click="btnzoomOut_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="图层操作">
                     <Fluent:DropDownButton x:Name="btnAddLayer" Header="添加图层"
-						LargeIcon="Resources/添加图层.jpg" ClosePopupOnMouseDown="True">
+						LargeIcon="Resources/AddLayer.png" ClosePopupOnMouseDown="True">
                         <MenuItem x:Name="btnAddPointLayer" Header="添加点图层" Click="btnAddPointLayer_Click"></MenuItem>
                         <MenuItem x:Name="btnAddLineLayer" Header="添加线图层" Click="btnAddLineLayer_Click"></MenuItem>
                         <MenuItem x:Name="btnAddPolygonLayer" Header="添加面图层" Click="btnAddPolygonLayer_Click"></MenuItem>
                     </Fluent:DropDownButton>
+                    <Fluent:Button x:Name="btnImportShp" Header="导入Shapefile"
+						LargeIcon="Resources/ImportShp.png" Click="btnImportShp_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="查询">
                     <Fluent:Button x:Name="btnQueryByLocat" Header="按位置查询"
-						LargeIcon="Resources/按位置查询.jpg" Click="btnQueryByLocat_Click"/>
+						LargeIcon="Resources/SelectByLocation.png" Click="btnQueryByLocat_Click"/>
                     <Fluent:Button x:Name="btnQueryByAttri" Header="按属性查询"
-						LargeIcon="Resources/按属性查询.jpg" Click="btnQueryByAttri_Click"/>
+						LargeIcon="Resources/SelectByAttributes.png" Click="btnQueryByAttri_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="可视化">
                     <Fluent:Button x:Name="btnSymbolize" Header="符号设置"
-						LargeIcon="Resources/符号设置.jpg" Click="btnSymbolize_Click"/>
+						LargeIcon="Resources/Symbology.png" Click="btnSymbolize_Click"/>
                     <Fluent:Button x:Name="btnMapLable" Header="添加注记"
-						LargeIcon="Resources/添加注记.jpg" Click="btnMapLable_Click"/>
+						LargeIcon="Resources/TextLabel.png" Click="btnMapLable_Click"/>
                     <Fluent:Button x:Name="btnMapping" Header="生成地图"
-						LargeIcon="Resources/生成地图.jpg" Click="btnMapping_Click"/>
+						LargeIcon="Resources/GenerateMap.png" Click="btnMapping_Click"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
 
@@ -147,23 +149,29 @@
                 <Fluent:RibbonGroupBox Header="添加要素">
                     <Fluent:Button x:Name="btnAddElement" Header="添加要素"
 						Icon="Images\Green.png"
-						LargeIcon="Resources/添加要素.jpg" Click="btnAddElement_Click"/>
+						LargeIcon="Resources/AddFeature.png" Click="btnAddElement_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="选择要素">
                     <Fluent:Button x:Name="btnSelectByLocation" Header="按位置选择"
 						Icon="Images\Green.png"
-						LargeIcon="Resources/按位置选择.png"/>
+						LargeIcon="Resources/SelectByLocation.png"/>
                     <Fluent:Button x:Name="btnSelectByAttribute" Header="按属性选择"
 						Icon="Images\Green.png"
-						LargeIcon="Resources/按属性选择.jpg"/>
+						LargeIcon="Resources/SelectByAttributes.png"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="编辑">
+                    <Fluent:Button x:Name="btnUndo" Header="撤销"
+						LargeIcon="Resources/Undo.png" Click="btnUndo_Click"/>
+                    <Fluent:Button x:Name="btnRedo" Header="重做"
+						LargeIcon="Resources/Redo.png" Click="btnRedo_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="编辑状态">
                     <Fluent:Button x:Name="btnSaveEdit" Header="保存编辑"
 						Icon="Images\Green.png"
-						LargeIcon="Resources/保存编辑.jpg"/>
+						LargeIcon="Resources/SaveEdit.png"/>
                     <Fluent:Button x:Name="btnEndEdit" Header="结束编辑"
 						Icon="Images\Green.png"
-						LargeIcon="Resources/结束编辑.jpg" Click="btnEndEdit_Click"/>
+						LargeIcon="Resources/FinishEdit.png" Click="btnEndEdit_Click"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
             <!--<Fluent:RibbonTabItem x:Name="TabLayer" Header="图层" Group="{Binding ElementName=groupEdit}">
@@ -286,7 +294,7 @@
                         </xcad:LayoutAnchorablePane>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument ContentId="document1" Title="Document 1" >
-                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Left" VerticalAlignment="Top" ClipToBounds="True"/>
+                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Left" VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove"/>
                                 <!--<MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left"  VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>-->
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>

@@ -62,6 +62,27 @@ namespace MercuryGIS
 
         private void Open_MouseDown(object sender, RoutedEventArgs e)
         {
+
+            OpenFileDialog opendlg = new OpenFileDialog();
+            opendlg.Filter = "smartgisproject(*.pro)|*.pro";
+            if (opendlg.ShowDialog(this) == true)
+            {
+                mappro = MapProject.LoadMapProject(opendlg.FileName);
+                if (mappro == null)
+                {
+                    //MessageBox.Show("打开地图失败！");
+                    return;
+                }
+
+                mappro.projectpath = opendlg.FileName;
+                List<string> datapathlist = mappro.dic_datapath.Values.ToList();
+                mapControl.mapcontent = mapcontent.LoadMapContent(mappro.projectname, mappro.dic_datapath, mappro.dic_stylepath, mappro.server, mappro.port, mappro.username, mappro.password, mappro.database);
+                this.gdb = mapControl.mapcontent.gdb;
+                ShowTreeView(mapControl.mapcontent);
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+            }
+
             //OpenFileDialog dialog = new OpenFileDialog();
             //dialog.Filter = "Map File (.txt)|*.txt";
             //if (dialog.ShowDialog() == true)
@@ -79,10 +100,37 @@ namespace MercuryGIS
             //    this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
             //    curLayer = layers[0];
             //}
+
+
         }
 
         private void Save_MouseDown(object sender, RoutedEventArgs e)
         {
+            if (mappro == null || gdb == null) { return; }
+            if (mappro.projectpath == null || mappro.projectpath == "")
+            {
+                SaveFileDialog sSavefiledlg = new SaveFileDialog();
+                sSavefiledlg.Filter = "MercuryGIS Project(*.pro)|*.pro";
+                if (sSavefiledlg.ShowDialog(this) == true)
+                {
+                    mappro.projectpath = sSavefiledlg.FileName;
+                }
+            }
+            mapControl.mapcontent.Savemapcontent(mappro.dic_stylepath);
+            //按照treeview调整path的顺序
+            ItemCollection nodes = treeView.Items;
+            Dictionary<string, string> ordereddatapath = new Dictionary<string, string>();
+            Dictionary<string, string> orderedstylepath = new Dictionary<string, string>();
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                LayerModel model = (LayerModel)nodes[i];
+                ordereddatapath.Add(model.Name, mappro.dic_datapath[model.Name]);
+                orderedstylepath.Add(model.Name, mappro.dic_stylepath[model.Name]);
+
+            }
+            mappro.dic_datapath = ordereddatapath;
+            mappro.dic_stylepath = orderedstylepath;
+            if (mappro.SaveMapProject(mappro.projectpath)) MessageBox.Show(this, "地图保存成功!", "保存地图");
             //SaveFileDialog dialog = new SaveFileDialog();
             //if (dialog.ShowDialog() == true)
             //{
@@ -254,28 +302,28 @@ namespace MercuryGIS
         //Import shp file
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Shapefile File (.shp)|*.shp";
-            if (dialog.ShowDialog() == true)
-            {
-                string path = dialog.FileName;
-                if (path == null || path == "") return;
-                string stylepath = path.Split('.')[0] + ".sld";
-                string layername = mapControl.mapcontent.addLayer(path, stylepath);
-                mappro.dic_datapath.Add(layername, path);
-                mappro.dic_stylepath.Add(layername, stylepath);
-                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
-                ShowTreeView(mapControl.mapcontent);
-                mapControl.mapcontrol_refresh();
-                //Layer newLayer = Importer.readshpfile(path);
-                //newLayer.Filename = path;
-                //newLayer.Name = System.IO.Path.GetFileNameWithoutExtension(path);
-                //mapControl.Map.Add(newLayer);
-                //treeView.Items.Add(new LayerModel(newLayer.Name));
-                //mapControl.ScaleToLayer(newLayer);
-                //this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
-                //curLayer = newLayer;
-            }
+            //OpenFileDialog dialog = new OpenFileDialog();
+            //dialog.Filter = "Shapefile File (.shp)|*.shp";
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    string path = dialog.FileName;
+            //    if (path == null || path == "") return;
+            //    string stylepath = path.Split('.')[0] + ".sld";
+            //    string layername = mapControl.mapcontent.addLayer(path, stylepath);
+            //    mappro.dic_datapath.Add(layername, path);
+            //    mappro.dic_stylepath.Add(layername, stylepath);
+            //    mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+            //    ShowTreeView(mapControl.mapcontent);
+            //    mapControl.mapcontrol_refresh();
+            //    //Layer newLayer = Importer.readshpfile(path);
+            //    //newLayer.Filename = path;
+            //    //newLayer.Name = System.IO.Path.GetFileNameWithoutExtension(path);
+            //    //mapControl.Map.Add(newLayer);
+            //    //treeView.Items.Add(new LayerModel(newLayer.Name));
+            //    //mapControl.ScaleToLayer(newLayer);
+            //    //this.Title = "Mercury GIS - " + System.IO.Path.GetFileNameWithoutExtension(path);
+            //    //curLayer = newLayer;
+            //}
         }
 
         private void btnWholeScreen_Click(object sender, RoutedEventArgs e)
@@ -299,8 +347,8 @@ namespace MercuryGIS
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPoint, "D:\\test.shp", "D:\\test.sld");
-                mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPoint, dialog.Text, "D:\\test.sld");
+                mappro.dic_datapath.Add(dialog.Text, dialog.Text);
                 mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
 
                 mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
@@ -320,8 +368,8 @@ namespace MercuryGIS
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbLineString, "d:\\test.shp", "d:\\test.sld");
-                mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbLineString, dialog.Text, "d:\\test.sld");
+                mappro.dic_datapath.Add(dialog.Text, dialog.Text);
                 mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
 
                 mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
@@ -340,8 +388,8 @@ namespace MercuryGIS
             InputBox dialog = new InputBox();
             if (dialog.ShowDialog() == true)
             {
-                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPolygon, "d:\\test.shp", "d:\\test.sld");
-                mappro.dic_datapath.Add(dialog.Text, "d:\\test.shp");
+                mapControl.mapcontent.CreateLayer(dialog.Text, OSGeo.OGR.wkbGeometryType.wkbPolygon, dialog.Text, "d:\\test.sld");
+                mappro.dic_datapath.Add(dialog.Text, dialog.Text);
                 mappro.dic_stylepath.Add(dialog.Text, "d:\\test.sld");
 
                 mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
@@ -529,8 +577,13 @@ namespace MercuryGIS
                 string name = dialog.mapName;
                 //创建工程对象
                 mappro = MapProject.CreateMapProject(name);
+                mappro.server = dialog.server;
+                mappro.port = dialog.port;
+                mappro.username = dialog.username;
+                mappro.password = dialog.password;
+                mappro.database = dialog.database;
                 //创建mapcontent对象
-                mapcontent mapcontent = mapcontent.createnewmapcontentofnolayer(name);
+                mapcontent mapcontent = mapcontent.createnewmapcontentofnolayer(name, dialog.server, dialog.port, dialog.username, dialog.password, dialog.database);
                 gdb = mapcontent.gdb;
                 mapControl.mapcontent = mapcontent;
                 mapControl.mapcontrol_refresh();
@@ -566,6 +619,42 @@ namespace MercuryGIS
             //treeView1.Nodes.Clear();
             //treeView1.Nodes.Add(mapnode);
             //treeView1.ExpandAll();
+        }
+
+        private void btnUndo_Click(Object sender, RoutedEventArgs e)
+        {
+            mapControl.OperationUndo();
+        }
+
+        private void btnRedo_Click(Object sender, RoutedEventArgs e)
+        {
+            mapControl.OperationRedo();
+        }
+
+        private void btnImportShp_Click(Object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Shapefile File (.shp)|*.shp";
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+                if (path == null || path == "") return;
+                string stylepath = path.Split('.')[0] + ".sld";
+                string layername = System.IO.Path.GetFileNameWithoutExtension(path);
+                string guid = GenerateGUID();
+                mapControl.mapcontent.addLayer(path, stylepath, guid, layername);
+                mappro.dic_datapath.Add(layername, guid);
+                mappro.dic_stylepath.Add(layername, stylepath);
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                ShowTreeView(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+            }
+        }
+
+        private string GenerateGUID()
+        {
+            Guid id = Guid.NewGuid();
+            return ("g" + id).Replace("-", "");
         }
     }
 

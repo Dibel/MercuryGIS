@@ -15,7 +15,12 @@ namespace GisSmartTools
     {
         public string projectname = "";
         public string projectpath = "";
-        
+        public string server = "";
+        public string port = "";
+        public string username = "";
+        public string password = "";
+        public string database = "";
+
         public Dictionary<string, string> dic_datapath;
         public Dictionary<string, string> dic_stylepath;
 

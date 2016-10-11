@@ -52,6 +52,7 @@ namespace GisSmartTools.Support
         public float size = 10;
         public double offset_x = 0;
         public double offset_y = 0;
+        [NonSerialized()]
         public Color color;
 
         public pointsymbolizer()
@@ -76,6 +77,7 @@ namespace GisSmartTools.Support
         public bool visible = true;
         public System.Drawing.Drawing2D.DashStyle linestyle = System.Drawing.Drawing2D.DashStyle.Solid;
         public float width = 2;
+        [NonSerialized()]
         public Color color;
         public linesymbolizer()
         {
@@ -97,7 +99,9 @@ namespace GisSmartTools.Support
         //  public int sign = Symbolizer.polygonsymbolizer;
         public string label = "";
         public bool visible = true;
+        [NonSerialized()]
         public Color strokecolor;
+        [NonSerialized()]
         public Color fillcolor;
         public float strokewidth = 2;
         public polygonsymbolizer()
@@ -132,7 +136,9 @@ namespace GisSmartTools.Support
         public FontStyle fontstyle = FontStyle.Regular;*/
         public string attributename = "FeatureID";
         public bool visible = false;
+        [NonSerialized()]
         public PortableFontDesc font;
+        [NonSerialized()]
         public Color color = Colors.Black;
         public float offset_x = 0;
         public float offset_y = 5;
@@ -503,6 +509,7 @@ namespace GisSmartTools.Support
         public List<Layer> layerlist;
         public GeoDatabase gdb;
         public SRS srs;
+        
 
 
         public bool CreateLayer(string name, OSGeo.OGR.wkbGeometryType type,string save_featuresourcepath,string save_stylepath)
@@ -521,12 +528,17 @@ namespace GisSmartTools.Support
       /// <param name="layerpath"></param>
       /// <param name="stylepath"></param>
       /// <returns></returns>
-        public string addLayer(string layerpath,string stylepath)
+        public string addLayer(string layerpath,string stylepath, string guid, string layername)
         {
             if (layerpath == null) return null;
             FeatureSource featuresource = null;
-            string layername = this.gdb.AddFeatureSource(layerpath);
-            if (!this.gdb.featureSources.TryGetValue(layername, out featuresource)) return null ;
+            PGGeoDatabase gdb = (PGGeoDatabase)this.gdb;
+            //string layername =
+            gdb.AddSHPFeatureSource(layerpath, guid);
+            if (!this.gdb.featureSources.TryGetValue(guid, out featuresource))
+            {
+                return null;
+            }
             Style style = null;
             try
             {
@@ -612,9 +624,9 @@ namespace GisSmartTools.Support
             
         }
 
-         public static mapcontent createnewmapcontentofnolayer(string mapname)
+         public static mapcontent createnewmapcontentofnolayer(string mapname, string server, string port, string username, string password, string database)
         {
-            GeoDatabase gdb = GeoDatabase.GetGeoDatabase(new List<string>());
+            GeoDatabase gdb = PGGeoDatabase.GetGeoDatabase(server, port, username, password, database, new List<string>());
             List<Layer> layerlist = new List<Layer>();
             mapcontent map = new mapcontent(mapname, gdb,layerlist);
             return map;
@@ -628,16 +640,16 @@ namespace GisSmartTools.Support
       /// <param name="mapname"></param>
       /// <param name="stylepath">mapproject必须给相同数量的stylepath，如果没有value应该为null,key为layername</param>
       /// <returns></returns>
-        public static mapcontent LoadMapContent(string mapname,List<string> datasourcepath,Dictionary<string,string> stylepath)
+        public static mapcontent LoadMapContent(string mapname,Dictionary<string, string> datasourcepath,Dictionary<string,string> stylepath, string server, string port, string username, string password, string database)
         {
             List<Layer> layerlist = new List<Layer>();
-            GeoDatabase gdb = GeoDatabase.GetGeoDatabase(datasourcepath);
-            Dictionary<String, FeatureSource> dic = gdb.featureSources;
-            foreach(string layername in dic.Keys)
+            GeoDatabase gdb = PGGeoDatabase.GetGeoDatabase(server, port, username, password, database, datasourcepath.Values.ToList());
+            //Dictionary<String, FeatureSource> dic = gdb.featureSources;
+            foreach(string layername in datasourcepath.Keys)
             {
                 //获取featuresoucre
                 FeatureSource featuresource = null;
-                if (!gdb.featureSources.TryGetValue(layername, out featuresource)) continue;
+                if (!gdb.featureSources.TryGetValue(datasourcepath[layername], out featuresource)) continue;
                 
                 Layer layer = Layer.LoadLayer(featuresource, layername, stylepath[layername]);
                 layerlist.Add(layer);

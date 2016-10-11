@@ -20,6 +20,12 @@ namespace MercuryGIS
     public partial class NewMap : Window
     {
         public string mapName;
+        public string server;
+        public string port;
+        public string username;
+        public string password;
+        public string database;
+
         public NewMap()
         {
             InitializeComponent();
@@ -34,6 +40,11 @@ namespace MercuryGIS
         {
             DialogResult = true;
             mapName = textBox.Text;
+            server = textbox_server.Text;
+            port = textbox_port.Text;
+            username = textbox_username.Text;
+            password = textbox_password.Password;
+            database = textbox_database.Text;
         }
     }
 }

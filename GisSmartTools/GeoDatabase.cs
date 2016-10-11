@@ -9,34 +9,44 @@ using GisSmartTools.Geometry;
 
 namespace GisSmartTools.Data
 {
+
+    public abstract class GeoDatabase
+    {
+        public Dictionary<String, FeatureSource> featureSources;     //数据
+        public Dictionary<String, String> pathRef;  //表名和文件路径的对应,key为layername，value为filepath
+
+        public abstract String AddFeatureSource(String path);
+        public abstract FeatureSource CreateFeatureSource(Schema schema, String path);
+        public abstract Boolean SaveAll();
+        public abstract Boolean SaveToFile(string name);
+    }
     /**
-     * GeoDataBase
+     * SHPGeoDataBase
      * 空间数据库类
      * 对包含空间数据和属性数据元信息的整体封装，提供存取基本地理数据的功能
      * 整存整取
      * 暂时只支持一个shapefile中只有一个图层的情况
-     * 必须通过GetGeoDatabase（）获取实例，不能直接新建实例
+     * 必须通过GetSHPGeoDataBase（）获取实例，不能直接新建实例
      * */
-    public class GeoDatabase
+    public class SHPGeoDataBase:GeoDatabase
     {
-        public Dictionary<String,FeatureSource> featureSources;     //数据
-        public Dictionary<String, String> pathRef;  //表名和文件路径的对应,key为layername，value为filepath
+        
         private Dictionary<String,DataSource> iDses;             //datasources of input files
 
-        private GeoDatabase()
+        private SHPGeoDataBase()
         {
             featureSources = new Dictionary<String, FeatureSource>();
             pathRef = new Dictionary<String, String>();
             iDses = new Dictionary<string, DataSource>();
         }
 
-        //给定路径，创建GeoDatabase实例,并从数据库中读取所有图层的schema,必须不包含同名表，否则返回null
-        public static GeoDatabase GetGeoDatabase(List<String> pathList)
+        //给定路径，创建SHPGeoDataBase实例,并从数据库中读取所有图层的schema,必须不包含同名表，否则返回null
+        public static SHPGeoDataBase GetGeoDataBase(List<String> pathList)
         {
-            GeoDatabase resultDB = new GeoDatabase();
+            SHPGeoDataBase resultDB = new SHPGeoDataBase();
             foreach (String path in pathList)
             {
-                FeatureSource tmpSrc = GeoDatabase.GetFeaturesource(resultDB,path);
+                FeatureSource tmpSrc = SHPGeoDataBase.GetFeaturesource(resultDB,path);
                 if (resultDB.pathRef.ContainsKey(tmpSrc.schema.name)) return null;
                 resultDB.pathRef.Add(tmpSrc.schema.name, path);
                 resultDB.featureSources.Add(tmpSrc.schema.name, tmpSrc);
@@ -44,10 +54,10 @@ namespace GisSmartTools.Data
             return resultDB;
         }
 
-        //读取一个shapefile文件并将其中的第一个图层添加到当前GeoDatabase
-        public String AddFeatureSource(String path)
+        //读取一个shapefile文件并将其中的第一个图层添加到当前SHPGeoDataBase
+        public override String AddFeatureSource(String path)
         {
-            FeatureSource tmpSrc = GeoDatabase.GetFeaturesource(this,path);
+            FeatureSource tmpSrc = SHPGeoDataBase.GetFeaturesource(this,path);
             if (this.pathRef.ContainsKey(tmpSrc.schema.name)) return null;
             this.pathRef.Add(tmpSrc.schema.name, path);
             this.featureSources.Add(tmpSrc.schema.name, tmpSrc);
@@ -55,7 +65,7 @@ namespace GisSmartTools.Data
         }
 
         //在内存中新建一个（显式调用save系列函数后才保存在磁盘）
-        public FeatureSource CreateFeatureSource(Schema schema, String path)
+        public override FeatureSource CreateFeatureSource(Schema schema, String path)
         {
             if (this.pathRef.ContainsKey(schema.name)) return null;
             FeatureSource resultSrc = new FeatureSource(schema, new FeatureCollection());
@@ -67,7 +77,7 @@ namespace GisSmartTools.Data
 
         #region FunctionsRead
         //从文件中读取数据
-        public static FeatureSource GetFeaturesource(GeoDatabase thisdb, String path)
+        private static FeatureSource GetFeaturesource(SHPGeoDataBase thisdb, String path)
         {
             OSGeo.OGR.DataSource ds = GetOGRDataSource(thisdb,path);
 
@@ -98,7 +108,7 @@ namespace GisSmartTools.Data
         }
 
         //get a ogr datasorce by path string
-        private static OSGeo.OGR.DataSource GetOGRDataSource(GeoDatabase thisdb, String path)
+        private static OSGeo.OGR.DataSource GetOGRDataSource(SHPGeoDataBase thisdb, String path)
         {
 
             OSGeo.OGR.Ogr.RegisterAll();
@@ -294,7 +304,7 @@ namespace GisSmartTools.Data
         #region savedata
 
         //将内存中所有图层的数据完全保存到数据库中
-        public Boolean SaveAll()
+        public override Boolean SaveAll()
         {
             Boolean flag = true;
             for (int i = 0; i < this.pathRef.Count; ++i)
@@ -303,9 +313,170 @@ namespace GisSmartTools.Data
             }
             return flag;
         }
+        /// <summary>
+        /// 给定一个shapefile featuresource存储到对应的path
+        /// </summary>
+        /// <param name="featuresource"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static Boolean SaveFeatureSource2File(FeatureSource featuresource,string path)
+        {
+            Ogr.RegisterAll();
+            //to support chinese path
+            OSGeo.GDAL.Gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "NO");
+            //to support chinese field name
+            OSGeo.GDAL.Gdal.SetConfigOption("SHAPE_ENCODING", "");
+            string strDriverName = "ESRI Shapefile";
+            Driver oDriver = Ogr.GetDriverByName(strDriverName);
+            if (oDriver == null)
+            {
+                //说明driver不可用
+                return false;
+            }
+            String pathPrefix = System.IO.Path.GetDirectoryName(path);
+            String pathPostfix = System.Guid.NewGuid().ToString();
+            if (File.Exists(pathPrefix + "\\" + pathPostfix)) File.Delete(pathPrefix + "\\" + pathPostfix);
+
+            //create a datasource, if successfully, a shp file would be created
+            DataSource oDs = oDriver.CreateDataSource(pathPrefix + "\\" + pathPostfix, null);
+            Schema tmpSchema = featuresource.schema;
+            Layer layer = oDs.CreateLayer(tmpSchema.name, tmpSchema.rs.spetialReference, tmpSchema.geometryType, null);
+
+            //insert all the fields to layer
+            //use index instead of field name to avoid the error caused by chinese words
+            int fieldcount = tmpSchema.fields.Count;
+            for (int i = 0; i < fieldcount; ++i)
+            {
+                layer.CreateField(tmpSchema.fields.ElementAt(i).Value, 1);
+            }
+            FeatureDefn fdef = layer.GetLayerDefn();
+
+            FeatureCollection fc = featuresource.features;
+            int fcount = fc.count;
+            for (int i = 0; i < fcount; ++i)
+            {
+                GisSmartTools.Data.Feature tmpFeature=fc.featureList[i];
+                if (!tmpFeature.visible) continue;
+                //create a new feature
+                OSGeo.OGR.Feature newFeature = new OSGeo.OGR.Feature(fdef);
+
+                //set attribute
+                newFeature.SetFID(tmpFeature.featureID);
+                for (int j = 0; j < fieldcount; ++j)
+                {
+                    String fieldname = tmpSchema.fields.ElementAt(j).Key;
+                    FieldType ft = tmpSchema.fields[fieldname].GetFieldType();
+                    try{
+                        switch (ft)
+                        {
+
+                            case FieldType.OFTString:
+                                newFeature.SetField(j, (String)tmpFeature.attributes[fieldname]);
+                                break;
+                            case FieldType.OFTInteger:
+                                newFeature.SetField(j, (int)tmpFeature.attributes[fieldname]);
+                                break;
+                            case FieldType.OFTReal:
+                                newFeature.SetField(j, (double)tmpFeature.attributes[fieldname]);
+                                break;
+                            case FieldType.OFTWideString:
+                                newFeature.SetField(j, (String)tmpFeature.attributes[fieldname]);
+                                break;
+                            default:
+                                newFeature.SetField(j, (String)tmpFeature.attributes[fieldname]);
+                                break;
+                        }
+                    }catch(Exception e)
+                    {
+
+                    } 
+                }
+
+                //get geometry
+                OSGeo.OGR.wkbGeometryType featType = tmpFeature.geometry.geometryType;
+                OSGeo.OGR.Geometry geo = new OSGeo.OGR.Geometry(featType);
+                if(geo!=null)
+                switch (featType)
+                {
+                    case OSGeo.OGR.wkbGeometryType.wkbPoint:
+                        GisSmartTools.Geometry.PointD tmpPoint = (GisSmartTools.Geometry.PointD)tmpFeature.geometry;
+                        geo.AddPoint(tmpPoint.X, tmpPoint.Y,0.00);
+                        break;
+                    case OSGeo.OGR.wkbGeometryType.wkbLineString:
+                        GisSmartTools.Geometry.SimplePolyline tmpLine = (GisSmartTools.Geometry.SimplePolyline)tmpFeature.geometry;
+                        foreach (GisSmartTools.Geometry.PointD po in tmpLine.points)
+                        {
+                            geo.AddPoint(po.X, po.Y, 0.00);
+                        }
+                        break;
+                    case wkbGeometryType.wkbMultiLineString:
+                        GisSmartTools.Geometry.Polyline lines = (GisSmartTools.Geometry.Polyline)tmpFeature.geometry;
+                        foreach (SimplePolyline line in lines.childPolylines)
+                        {
+                            OSGeo.OGR.Geometry tmpgeo = new OSGeo.OGR.Geometry(OSGeo.OGR.wkbGeometryType.wkbLineString);
+                            foreach (GisSmartTools.Geometry.PointD point in line.points)
+                            {
+                                tmpgeo.AddPoint(point.X, point.Y, 0.00);
+                            }
+                            geo.AddGeometryDirectly(tmpgeo);
+                        }
+                        break;
+                    case OSGeo.OGR.wkbGeometryType.wkbPolygon:
+                        GisSmartTools.Geometry.SimplePolygon gon = (GisSmartTools.Geometry.SimplePolygon)tmpFeature.geometry;
+                        foreach (SimplePolyline ring7 in gon.rings)
+                        {
+                            OSGeo.OGR.Geometry tmpgeo = new OSGeo.OGR.Geometry(OSGeo.OGR.wkbGeometryType.wkbLinearRing);
+                            foreach (GisSmartTools.Geometry.PointD point in ring7.points)
+                            {
+                                tmpgeo.AddPoint(point.X, point.Y, 0.00);
+                            }
+                            geo.AddGeometryDirectly(tmpgeo);
+                        }
+                            break;
+                    case wkbGeometryType.wkbMultiPolygon:
+                        GisSmartTools.Geometry.Polygon gons = (GisSmartTools.Geometry.Polygon)tmpFeature.geometry;
+                        foreach (GisSmartTools.Geometry.SimplePolygon cgon in gons.childPolygons)
+                        {
+                            OSGeo.OGR.Geometry geogon = new OSGeo.OGR.Geometry(OSGeo.OGR.wkbGeometryType.wkbPolygon);
+                            foreach (GisSmartTools.Geometry.SimplePolyline ring6 in cgon.rings)
+                            {
+                                OSGeo.OGR.Geometry geoline = new OSGeo.OGR.Geometry(OSGeo.OGR.wkbGeometryType.wkbLinearRing);
+                                foreach (GisSmartTools.Geometry.PointD point6 in ring6.points)
+                                {
+                                    geoline.AddPoint(point6.X, point6.Y, 0.00);
+                                }
+                                geogon.AddGeometryDirectly(geoline);
+                            }
+                            geo.AddGeometryDirectly(geogon);
+                        }
+                        break;
+                    default:
+                        break;
+
+                }
+
+                //set feature
+                newFeature.SetGeometry(geo);
+                //add to layer
+                layer.CreateFeature(newFeature);
+            }
+
+            //call Dispose method to save to file
+            oDs.Dispose();
+            //enumerate all the files in the temp file directory and move them to the output directory
+            string[] tmpName = System.IO.Directory.GetFiles(pathPrefix + "\\" + pathPostfix);
+            foreach (string file in tmpName)
+            {
+                string decFile = pathPrefix + "\\" + Path.GetFileName(file);
+                if (File.Exists(decFile)) File.Delete(decFile);
+                File.Move(file, decFile);
+            }
+            Directory.Delete(pathPrefix + "\\" + pathPostfix, true);
+            return true;
+        }
 
         //将内存中一个图层的数据另存为在文件中
-        public Boolean SaveAsToFile(String name, String path)
+        private Boolean SaveAsToFile(String name, String path)
         {
             Ogr.RegisterAll();
             //to support chinese path
@@ -470,7 +641,7 @@ namespace GisSmartTools.Data
         }
 
         //将内存中一个图层的数据保存在文件中
-        public Boolean SaveToFile(String name)
+        public override Boolean SaveToFile(String name)
         {
             String path;
             if(!(this.pathRef.TryGetValue(name,out path)))return false;

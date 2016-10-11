@@ -722,6 +722,7 @@ namespace GisSmartTools
                 }
             }
 
+            Thread.Sleep(10);
             this.Source = editbmp;
         }
 
