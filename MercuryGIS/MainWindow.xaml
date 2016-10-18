@@ -21,8 +21,8 @@
                 <MenuItem  Header="上移" Click="MoveUp_Click"/>
                 <MenuItem  Header="下移" />
                 <MenuItem  Header="重命名"/>
-                <!--<MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>-->
-                <MenuItem Header="属性数据"/>
+                <MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>
+                <MenuItem Header="属性数据" Click="Data_Click"/>
             </ContextMenu>
             <Style x:Key="TreeViewItemStyle" TargetType="TreeViewItem">
                 <Setter Property="IsExpanded" Value="True" />

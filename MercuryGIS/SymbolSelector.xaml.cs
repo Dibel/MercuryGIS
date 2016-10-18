@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Samples.CustomControls;
+using GisSmartTools.Support;
 
 namespace MercuryGIS
 {
@@ -21,37 +22,79 @@ namespace MercuryGIS
     public partial class SymbolSelector : Window
     {
 
-        private MercuryGISData.Symbol symbol;
+        //private MercuryGISData.Symbol symbol;
+        public SolidColorBrush brush;
+        public RenderRule rule;
         public SymbolSelector()
         {
             InitializeComponent();
         }
 
-        public SymbolSelector(MercuryGISData.Symbol symbol)
+        public SymbolSelector(RenderRule rule)
         {
             InitializeComponent();
-            this.symbol = symbol;
-            
-            textBox.Text = symbol.size.ToString();
-            if (symbol.brush == null)
+            this.rule = rule;
+            switch (rule.geometrysymbolizer.sign)
             {
-                outlineColor.Visibility = Visibility.Collapsed;
-                outlineLabel.Visibility = Visibility.Collapsed;
-                solidColor.Fill = symbol.pen.Brush;
-                return;
+                case SymbolizerType.POINT:
+                    pointsymbolizer pointsymbolizer = (pointsymbolizer)rule.geometrysymbolizer;
+                    textBox.Text = pointsymbolizer.size.ToString();
+                    outlineColor.Visibility = Visibility.Collapsed;
+                    outlineLabel.Visibility = Visibility.Collapsed;
+                    solidColor.Fill = new SolidColorBrush((Color)pointsymbolizer.color);
+                    break;
+                case SymbolizerType.LINE:
+                    linesymbolizer linesymbolizer = (linesymbolizer)rule.geometrysymbolizer;
+                    textBox.Text = linesymbolizer.width.ToString();
+                    outlineColor.Visibility = Visibility.Collapsed;
+                    outlineLabel.Visibility = Visibility.Collapsed;
+                    solidColor.Fill = new SolidColorBrush((Color)linesymbolizer.color);
+                    break;
+                case SymbolizerType.POLYGON:
+                    polygonsymbolizer polygonsymbolizer = (polygonsymbolizer)rule.geometrysymbolizer;
+                    textBox.Text = polygonsymbolizer.strokewidth.ToString();
+                    outlineColor.Fill = new SolidColorBrush((Color)polygonsymbolizer.strokecolor);
+                    solidColor.Fill = new SolidColorBrush((Color)polygonsymbolizer.fillcolor);
+                    break;
+                case SymbolizerType.TEXT:
+                    break;
             }
-            outlineColor.Fill = symbol.pen.Brush;
-            solidColor.Fill = symbol.brush;
+            
+            //if (symbol.brush == null)
+            //{
+            //    outlineColor.Visibility = Visibility.Collapsed;
+            //    outlineLabel.Visibility = Visibility.Collapsed;
+            //    solidColor.Fill = symbol.pen.Brush;
+            //    return;
+            //}
+            //outlineColor.Fill = symbol.pen.Brush;
+            //solidColor.Fill = symbol.brush;
 
         }
 
         //OK
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            symbol.brush = solidColor.Fill;
-            symbol.size = Convert.ToInt32(textBox.Text);
-
-            symbol.pen = new Pen(outlineColor.Fill, symbol.size);
+            switch (rule.geometrysymbolizer.sign)
+            {
+                case SymbolizerType.POINT:
+                    pointsymbolizer pointsymbolizer = (pointsymbolizer)rule.geometrysymbolizer;
+                    pointsymbolizer.size = Convert.ToInt32(textBox.Text);
+                    pointsymbolizer.color = ((SolidColorBrush)solidColor.Fill).Color;
+                    break;
+                case SymbolizerType.LINE:
+                    linesymbolizer linesymbolizer = (linesymbolizer)rule.geometrysymbolizer;
+                    linesymbolizer.width = Convert.ToInt32(textBox.Text);
+                    linesymbolizer.color = ((SolidColorBrush)solidColor.Fill).Color;
+                    break;
+                case SymbolizerType.POLYGON:
+                    polygonsymbolizer polygonsymbolizer = (polygonsymbolizer)rule.geometrysymbolizer;
+                    polygonsymbolizer.strokewidth = Convert.ToInt32(textBox.Text);
+                    polygonsymbolizer.strokecolor = ((SolidColorBrush)outlineColor.Fill).Color;
+                    polygonsymbolizer.fillcolor = ((SolidColorBrush)solidColor.Fill).Color;
+                    break;
+            }
+            brush = (SolidColorBrush)solidColor.Fill;
             DialogResult = true;
         }
 

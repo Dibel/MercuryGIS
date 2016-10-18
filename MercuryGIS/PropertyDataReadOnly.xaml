@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MercuryGIS"
         mc:Ignorable="d"
-        Title="PropertyData" Height="600" Width="500">
+        Title="属性数据" Height="600" Width="700">
     <Grid>
         <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" VerticalAlignment="Top" AutoGenerateColumns="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding}" Height="Auto" Width="Auto"/>
 

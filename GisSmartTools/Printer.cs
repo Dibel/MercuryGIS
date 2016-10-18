@@ -10,11 +10,11 @@ namespace GisSmartTools.Test
     {
         public static void printnode(String node, String msg)
         {
-            FileStream fs = new FileStream("e:/test.txt", FileMode.Append);
-            StreamWriter writer = new StreamWriter(fs);
-            writer.WriteLine (node + ":" + msg);
-            writer.Flush();
-            writer.Close();
+            //FileStream fs = new FileStream("e:/test.txt", FileMode.Append);
+            //StreamWriter writer = new StreamWriter(fs);
+            //writer.WriteLine (node + ":" + msg);
+            //writer.Flush();
+            //writer.Close();
         }
     }
 }

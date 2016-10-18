@@ -183,14 +183,28 @@ namespace MercuryGIS
             {
                 PropertyDataReadOnly form = new PropertyDataReadOnly();
                 int id = treeView_selectedindex();
-                //form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
-                form.Show();
+                if (id >=0)
+                {
+                    LayerModel temp = (LayerModel)treeView.Items[id];
+                    var layer = mapControl.mapcontent.GetLayerByName(temp.Name);
+                    form.SetData(layer.featuresource);
+                    //form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
+                    form.Show();
+                }
+                
             }
         }
 
         private void Property_Click(object sender, RoutedEventArgs e)
         {
-            
+            int id = treeView_selectedindex();
+            if (id >= 0)
+            {
+                LayerModel temp = (LayerModel)treeView.Items[id];
+                var layer = mapControl.mapcontent.GetLayerByName(temp.Name);
+                MetaData form = new MetaData(layer.featuresource, temp.Name);
+                form.Show();
+            }
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -520,8 +534,8 @@ namespace MercuryGIS
 
         private void btnSymbolize_Click(object sender, RoutedEventArgs e)
         {
-            //Symbolize form = new Symbolize(mapControl);
-            //form.Show();
+            Symbolize form = new Symbolize(mapControl);
+            form.Show();
         }
 
         //调整图层顺序

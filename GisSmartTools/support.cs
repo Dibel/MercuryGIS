@@ -33,7 +33,14 @@ namespace GisSmartTools.Support
         RANKSTYLE  = 3,
         CUSTOMSTYLE = 4,
     }
-   
+
+    public enum PolygonStyle
+    {
+        SOLID = 1,
+        LINE = 2,
+        GRID = 3,
+    }
+
     [Serializable]
     public class Symbolizer
     {
@@ -100,6 +107,7 @@ namespace GisSmartTools.Support
         public Color strokecolor;
         public Color fillcolor;
         public float strokewidth = 2;
+        public PolygonStyle polygonstyle = PolygonStyle.SOLID;
         public polygonsymbolizer()
         {
             this.sign = SymbolizerType.POLYGON;
@@ -198,7 +206,8 @@ namespace GisSmartTools.Support
                 case SymbolizerType.POLYGON:
                     polygonsymbolizer polygonsym = polygonsymbolizer.createdefalutpolygonsymbolizer();
                     polygonsym.fillcolor = color;
-                    polygonsym.strokecolor = color;
+                    //polygonsym.strokecolor = color;
+                    polygonsym.strokecolor = Colors.Black;
                     return new RenderRule(null, polygonsym, new textsymbolizer());
             }
             return null;

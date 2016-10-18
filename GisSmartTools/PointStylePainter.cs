@@ -17,6 +17,7 @@ namespace GisSmartTools.Support
         CIRCLE_POINT = 6,
         CIRCLE_RECT = 7,
     }
+    
     class PointStylePainter
     {
         

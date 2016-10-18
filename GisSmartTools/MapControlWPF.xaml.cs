@@ -90,6 +90,8 @@ namespace GisSmartTools
         public WriteableBitmap textbmp = BitmapFactory.New(500, 500);
         private WriteableBitmap bmp;
         private WriteableBitmap temp_textbmp;
+        private WriteableBitmap linebmp;
+        private WriteableBitmap gridbmp;
         #endregion
 
         #region 自定义事件区
@@ -152,6 +154,27 @@ namespace GisSmartTools
             //Fixed size
             bitmap_X = 800;
             bitmap_Y = 500;
+            InitializeBackground();
+        }
+
+        private void InitializeBackground()
+        {
+            gridbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
+            using (gridbmp.GetBitmapContext())
+            {
+
+                gridbmp.Clear(Colors.White);
+
+                for (int i = 4; i < 801; i += 8)
+                {
+                    gridbmp.DrawLineAa(i, 0, 0, i, Colors.Black);
+                    gridbmp.DrawLineAa(i, 802, 802, i, Colors.Black);
+                }
+                linebmp = gridbmp.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
+                gridbmp.Blit(new Rect(0, 0, 802, 802), linebmp, new Rect(0, 0, 802, 802), WriteableBitmapExtensions.BlendMode.ColorKeying);
+            }
+            gridbmp = gridbmp.Crop(0, 0, bitmap_X, bitmap_Y);
+            linebmp = linebmp.Crop(0, 0, bitmap_X, bitmap_Y);
         }
 
 
@@ -393,24 +416,84 @@ namespace GisSmartTools
             //Pen pen = new Pen(symbolizer.strokecolor, symbolizer.strokewidth);
             //Brush brush = new SolidBrush(symbolizer.fillcolor);
 
+            switch (symbolizer.polygonstyle)
+            {
+                case PolygonStyle.SOLID:
+                    foreach (SimplePolyline ring in polygon.rings)
+                    {
+                        List<int> screenpointlist = new List<int>();
+                        foreach (PointD datapoint in ring.points)
+                        {
+                            ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                            screenpointlist.Add(screenpoint.X);
+                            screenpointlist.Add(screenpoint.Y);
+                        }
+                        screenpointlist.Add(screenpointlist[0]);
+                        screenpointlist.Add(screenpointlist[1]);
+                        bmp.FillPolygon(screenpointlist.ToArray(), symbolizer.fillcolor);
+                        bmp.DrawPolylineAa(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                        //list.AddRange(screenpointlist);
+                        //graphicspath.AddPolygon(screenpointlist.ToArray());
+                    }
+                    break;
+                case PolygonStyle.LINE:
+                    var tempbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    var bg = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    foreach (SimplePolyline ring in polygon.rings)
+                    {
+                        List<int> screenpointlist = new List<int>();
+                        foreach (PointD datapoint in ring.points)
+                        {
+                            ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                            screenpointlist.Add(screenpoint.X);
+                            screenpointlist.Add(screenpoint.Y);
+                        }
+                        screenpointlist.Add(screenpointlist[0]);
+                        screenpointlist.Add(screenpointlist[1]);
+                        tempbmp.FillPolygon(screenpointlist.ToArray(), Colors.Black);
+
+                        bmp.DrawPolylineAa(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                        //list.AddRange(screenpointlist);
+                        //graphicspath.AddPolygon(screenpointlist.ToArray());
+                    }
+                    bg.Clear((System.Windows.Media.Color)symbolizer.fillcolor);
+                    Rect rect = new Rect(0, 0, bitmap_X, bitmap_Y);
+                    bg.Blit(rect, linebmp, rect, WriteableBitmapExtensions.BlendMode.Additive);
+                    bg.Blit(rect, tempbmp, rect, WriteableBitmapExtensions.BlendMode.Mask);
+                    bmp.Blit(rect, bg, rect, WriteableBitmapExtensions.BlendMode.Alpha);
+                    break;
+                case PolygonStyle.GRID:
+                    var tempbmp1 = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    var bg1 = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    foreach (SimplePolyline ring in polygon.rings)
+                    {
+                        List<int> screenpointlist = new List<int>();
+                        foreach (PointD datapoint in ring.points)
+                        {
+                            ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                            screenpointlist.Add(screenpoint.X);
+                            screenpointlist.Add(screenpoint.Y);
+                        }
+                        screenpointlist.Add(screenpointlist[0]);
+                        screenpointlist.Add(screenpointlist[1]);
+                        tempbmp1.FillPolygon(screenpointlist.ToArray(), Colors.Black);
+                        
+
+                        bmp.DrawPolylineAa(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                        //list.AddRange(screenpointlist);
+                        //graphicspath.AddPolygon(screenpointlist.ToArray());
+                    }
+                    bg1.Clear((System.Windows.Media.Color)symbolizer.fillcolor);
+                    Rect rect1 = new Rect(0, 0, bitmap_X, bitmap_Y);
+                    bg1.Blit(rect1, gridbmp, rect1, WriteableBitmapExtensions.BlendMode.Additive);
+                    bg1.Blit(rect1, tempbmp1, rect1, WriteableBitmapExtensions.BlendMode.Mask);
+                    bmp.Blit(rect1, bg1, rect1, WriteableBitmapExtensions.BlendMode.Alpha);
+                    break;
+            }
+
             //List<PointF> list = new List<PointF>();
             //System.Drawing.Drawing2D.GraphicsPath graphicspath = new System.Drawing.Drawing2D.GraphicsPath();
-            foreach (SimplePolyline ring in polygon.rings)
-            {
-                List<int> screenpointlist = new List<int>();
-                foreach (PointD datapoint in ring.points)
-                {
-                    ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
-                    screenpointlist.Add(screenpoint.X);
-                    screenpointlist.Add(screenpoint.Y);
-                }
-                screenpointlist.Add(screenpointlist[0]);
-                screenpointlist.Add(screenpointlist[1]);
-                bmp.FillPolygon(screenpointlist.ToArray(), symbolizer.fillcolor);
-                bmp.DrawPolylineAa(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
-                //list.AddRange(screenpointlist);
-                //graphicspath.AddPolygon(screenpointlist.ToArray());
-            }
+            
             
             //g.DrawPath(pen, graphicspath);
             //g.FillPath(brush, graphicspath);
@@ -446,37 +529,121 @@ namespace GisSmartTools
             if (symbolizer.sign != SymbolizerType.POLYGON) return;
             //Pen pen = new Pen(symbolizer.strokecolor, symbolizer.strokewidth);
             //Brush brush = new SolidBrush(symbolizer.fillcolor);
-            foreach (SimplePolygon simplepolygon in polygon.childPolygons)
+
+            switch (symbolizer.polygonstyle)
             {
-                List<int[]> list = new List<int[]>();
-                foreach (SimplePolyline ring in simplepolygon.rings)
-                {
-                    List<int> screenpointlist = new List<int>();
-                    foreach (PointD datapoint in ring.points)
+                case PolygonStyle.SOLID:
+                    foreach (SimplePolygon simplepolygon in polygon.childPolygons)
                     {
-                        ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
-                        screenpointlist.Add(screenpoint.X);
-                        screenpointlist.Add(screenpoint.Y);
+                        List<int[]> list = new List<int[]>();
+                        foreach (SimplePolyline ring in simplepolygon.rings)
+                        {
+                            List<int> screenpointlist = new List<int>();
+                            foreach (PointD datapoint in ring.points)
+                            {
+                                ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                                screenpointlist.Add(screenpoint.X);
+                                screenpointlist.Add(screenpoint.Y);
+                            }
+                            //bmp.DrawPolygon(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                            //bmp.FillPolygon(screenpointlist.ToArray(), symbolizer.fillcolor);
+                            list.Add(screenpointlist.ToArray());
+                        }
+                        bmp.FillPolygonsEvenOdd(list.ToArray(), symbolizer.fillcolor);
+                        foreach (SimplePolyline ring in simplepolygon.rings)
+                        {
+                            List<int> screenpointlist = new List<int>();
+                            foreach (PointD datapoint in ring.points)
+                            {
+                                ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                                screenpointlist.Add(screenpoint.X);
+                                screenpointlist.Add(screenpoint.Y);
+                            }
+                            bmp.DrawPolygon(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                        }
+                        //g.DrawPolygon(pen, list.ToArray());
+                        //g.FillPolygon(brush, list.ToArray());
                     }
-                    //bmp.DrawPolygon(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
-                    //bmp.FillPolygon(screenpointlist.ToArray(), symbolizer.fillcolor);
-                    list.Add(screenpointlist.ToArray());
-                }
-                bmp.FillPolygonsEvenOdd(list.ToArray(), symbolizer.fillcolor);
-                foreach (SimplePolyline ring in simplepolygon.rings)
-                {
-                    List<int> screenpointlist = new List<int>();
-                    foreach (PointD datapoint in ring.points)
+                    break;
+                case PolygonStyle.LINE:
+                    var tempbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    var bg = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    bg.Clear((System.Windows.Media.Color)symbolizer.fillcolor);
+                    foreach (SimplePolygon simplepolygon in polygon.childPolygons)
                     {
-                        ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
-                        screenpointlist.Add(screenpoint.X);
-                        screenpointlist.Add(screenpoint.Y);
+                        List<int[]> list = new List<int[]>();
+                        foreach (SimplePolyline ring in simplepolygon.rings)
+                        {
+                            List<int> screenpointlist = new List<int>();
+                            foreach (PointD datapoint in ring.points)
+                            {
+                                ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                                screenpointlist.Add(screenpoint.X);
+                                screenpointlist.Add(screenpoint.Y);
+                            }
+                            list.Add(screenpointlist.ToArray());
+                        }
+                        
+                        tempbmp.FillPolygonsEvenOdd(list.ToArray(), Colors.Black);
+                        foreach (SimplePolyline ring in simplepolygon.rings)
+                        {
+                            List<int> screenpointlist = new List<int>();
+                            foreach (PointD datapoint in ring.points)
+                            {
+                                ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                                screenpointlist.Add(screenpoint.X);
+                                screenpointlist.Add(screenpoint.Y);
+                            }
+                            bmp.DrawPolygon(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                        }
                     }
-                    bmp.DrawPolygon(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
-                }
-                //g.DrawPolygon(pen, list.ToArray());
-                //g.FillPolygon(brush, list.ToArray());
+
+                    Rect rect = new Rect(0, 0, bitmap_X, bitmap_Y);
+                    bg.Blit(rect, linebmp, rect, WriteableBitmapExtensions.BlendMode.Additive);
+                    bg.Blit(rect, tempbmp, rect, WriteableBitmapExtensions.BlendMode.Mask);
+                    bmp.Blit(rect, bg, rect, WriteableBitmapExtensions.BlendMode.Alpha);
+                    break;
+                case PolygonStyle.GRID:
+                    var tempbmp1 = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    var bg1 = BitmapFactory.New(bitmap_X, bitmap_Y);
+                    bg1.Clear((System.Windows.Media.Color)symbolizer.fillcolor);
+                    foreach (SimplePolygon simplepolygon in polygon.childPolygons)
+                    {
+                        List<int[]> list = new List<int[]>();
+                        foreach (SimplePolyline ring in simplepolygon.rings)
+                        {
+                            List<int> screenpointlist = new List<int>();
+                            foreach (PointD datapoint in ring.points)
+                            {
+                                ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                                screenpointlist.Add(screenpoint.X);
+                                screenpointlist.Add(screenpoint.Y);
+                            }
+                            list.Add(screenpointlist.ToArray());
+                        }
+
+                        tempbmp1.FillPolygonsEvenOdd(list.ToArray(), Colors.Black);
+                        foreach (SimplePolyline ring in simplepolygon.rings)
+                        {
+                            List<int> screenpointlist = new List<int>();
+                            foreach (PointD datapoint in ring.points)
+                            {
+                                ScreenPoint screenpoint = FromMapPoint(rstransform.sourceToTarget(datapoint));
+                                screenpointlist.Add(screenpoint.X);
+                                screenpointlist.Add(screenpoint.Y);
+                            }
+                            bmp.DrawPolygon(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
+                        }
+
+                    }
+
+                    Rect rect1 = new Rect(0, 0, bitmap_X, bitmap_Y);
+                    bg1.Blit(rect1, gridbmp, rect1, WriteableBitmapExtensions.BlendMode.Additive);
+                    bg1.Blit(rect1, tempbmp1, rect1, WriteableBitmapExtensions.BlendMode.Mask);
+                    bmp.Blit(rect1, bg1, rect1, WriteableBitmapExtensions.BlendMode.Alpha);
+                    break;
             }
+            
             //pen.Dispose();
             //brush.Dispose();
             //渲染注记
