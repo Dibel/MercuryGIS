@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="属性数据" Height="600" Width="700">
     <Grid>
-        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Height="505" Width="693" AutoGenerateColumns="True" SelectionUnit="Cell" CanUserAddRows="True" CanUserDeleteRows="True" ItemsSource="{Binding}"/>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" VerticalAlignment="Top" Height="505" Width="693" AutoGenerateColumns="True" SelectionUnit="Cell" CanUserAddRows="True" CanUserDeleteRows="True" ItemsSource="{Binding}" CellEditEnding="dataGrid_CellEditEnding"/>
         <Button x:Name="ok" Content="确定" HorizontalAlignment="Left" Margin="502,529,0,0" VerticalAlignment="Top" Width="75" Click="ok_Click"/>
         <Button x:Name="cancel" Content="取消" HorizontalAlignment="Left" Margin="602,529,0,0" VerticalAlignment="Top" Width="75" Click="cancel_Click"/>
         <Button x:Name="addField" Content="添加列" HorizontalAlignment="Left" Margin="402,529,0,0" VerticalAlignment="Top" Width="75" Click="addField_Click"/>

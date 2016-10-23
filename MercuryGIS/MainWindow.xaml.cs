@@ -176,8 +176,15 @@ namespace MercuryGIS
             {
                 PropertyData form = new PropertyData();
                 int id = treeView_selectedindex();
+                if (id >= 0)
+                {
+                    LayerModel temp = (LayerModel)treeView.Items[id];
+                    var layer = mapControl.mapcontent.GetLayerByName(temp.Name);
+                    form.SetData(layer.featuresource);
+                    //form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
+                    form.Show();
+                }
                 //form.SetTable(mapControl.Map.GetLayer(id).dataset.table);
-                form.Show();
             }
             else
             {
