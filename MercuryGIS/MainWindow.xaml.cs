@@ -677,6 +677,34 @@ namespace MercuryGIS
             Guid id = Guid.NewGuid();
             return ("g" + id).Replace("-", "");
         }
+
+        private void treeView_SelectedItemChanged(Object sender, RoutedPropertyChangedEventArgs<Object> e)
+        {
+            int id = treeView_selectedindex();
+            if (id >= 0)
+            {
+                LayerModel temp = (LayerModel)treeView.Items[id];
+                var layer = mapControl.mapcontent.GetLayerByName(temp.Name);
+                mapControl.focuslayer = layer;
+            }
+        }
+
+        private void btnProjection_Click(Object sender, RoutedEventArgs e)
+        {
+            if (btnProjection.IsChecked == true)
+            {
+
+                mapControl.mapcontent.srs.srid = 5847;
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+            }
+            else
+            {
+                mapControl.mapcontent.srs.srid = 0;
+                mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
+                mapControl.mapcontrol_refresh();
+            }
+        }
     }
 
     //class LayerModel

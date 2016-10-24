@@ -478,6 +478,21 @@ namespace GisSmartTools.Support
             return collection.getEnvelop();
         }
 
+        public ReferenceSystem getReference()
+        {
+            var rect = getEnvelopofLayer();
+            ReferenceSystem srs = this.featuresource.schema.rs;
+            if (rect.minX < -180.0)
+            {
+                srs.srid = 0;
+            }
+            else
+            {
+                srs.srid = 4326;
+            }
+            return srs;
+        }
+
         /// <summary>
         ///  该函数负责将给定featuresource配以style并返回layer
         /// </summary>
@@ -625,6 +640,8 @@ namespace GisSmartTools.Support
             this.layerlist = layerlist;
             this.gdb = gdb;
             //???SRS怎么办
+            this.srs = new SRS();
+            srs.srid = 0;
             
         }
 
@@ -668,13 +685,23 @@ namespace GisSmartTools.Support
             Geometry.Rectangle rect = new Geometry.Rectangle(Utils.double_max, Utils.double_max, Utils.double_min, Utils.double_min);
             foreach (Layer layer in layerlist)
             {
+                if (!layer.visible)
+                {
+                    continue;
+                }
+
                 Geometry.Rectangle layerrect = layer.getEnvelopofLayer();
-               // if(layer.featuresource.schema.rs.spetialReference.)///////////////?????????????此处判断数据坐标系统与map坐标系统是否一致，如果不一致，需要转换
+                // if(layer.featuresource.schema.rs.spetialReference.)///////////////?????????????此处判断数据坐标系统与map坐标系统是否一致，如果不一致，需要转换
                 //layerrect = transform...
-                if (layerrect.minX < rect.minX) rect.minX = layerrect.minX;
-                if (layerrect.maxX > rect.maxX) rect.maxX = layerrect.maxX;
-                if (layerrect.minY < rect.minY) rect.minY = layerrect.minY;
-                if (layerrect.maxY > rect.maxY) rect.maxY = layerrect.maxY;
+                ReferenceSystem rs = layer.getReference();
+                RSTransform transform = RSTransformFactory.getRSTransform(rs, this.srs);
+                PointD minxy = transform.sourceToTarget(new PointD(layerrect.minX, layerrect.minY));
+                PointD maxxy = transform.sourceToTarget(new PointD(layerrect.maxX, layerrect.maxY));
+
+                if (minxy.X < rect.minX) rect.minX = minxy.X;
+                if (maxxy.X > rect.maxX) rect.maxX = maxxy.X;
+                if (minxy.Y < rect.minY) rect.minY = minxy.Y;
+                if (maxxy.Y > rect.maxY) rect.maxY = maxxy.Y;
             }
             return rect;
         }

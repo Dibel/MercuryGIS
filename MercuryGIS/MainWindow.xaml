@@ -136,6 +136,8 @@
 						LargeIcon="Resources/SelectByAttributes.png" Click="btnQueryByAttri_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="可视化">
+                    <Fluent:ToggleButton x:Name="btnProjection" Header="投影"
+						LargeIcon="Resources/Projection.png" Click="btnProjection_Click"/>
                     <Fluent:Button x:Name="btnSymbolize" Header="符号设置"
 						LargeIcon="Resources/Symbology.png" Click="btnSymbolize_Click"/>
                     <Fluent:Button x:Name="btnMapLable" Header="添加注记"
@@ -222,6 +224,7 @@
       ItemContainerStyle="{StaticResource TreeViewItemStyle}"
       ItemsSource="{Binding Mode=OneTime}"
       ItemTemplate="{StaticResource CheckBoxItemTemplate}"
+                   SelectedItemChanged="treeView_SelectedItemChanged"                 
       />
                                 <!--<TreeView x:Name="listView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="listView_MouseDoubleClick" PreviewMouseLeftButtonDown="listView_MouseLeftButtonDown">
                                     <TreeView.Resources>

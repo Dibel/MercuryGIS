@@ -52,6 +52,8 @@ namespace GisSmartTools
         private int bitmap_X = 800;
         private int bitmap_Y = 800;
         private int interval = 2;//容县
+        //private RSTransform rstransfrom = new RSTransform_NO_TRANSTRAM();
+
         //鼠标状态
         private Point mCurMouseLocation = new Point();//用于地图漫游时记录鼠标当前位置
 
@@ -196,7 +198,8 @@ namespace GisSmartTools
                         if (layer.visible)
                         {
                             //获取targetSRS,sourceSRS,然后获取RSTransform对象///////????????????????????????????????????????????????
-                            RSTransform rstransform = new RSTransform_WGS84_WEBMOCARTO();
+                            RSTransform rstransform = RSTransformFactory.getRSTransform(layer.getReference(), mapcontent.srs);
+                            //RSTransform rstransform = new RSTransform_WGS84_WEBMOCARTO();
                             paintLayerbyStyle(layer, rstransform);
                         }
 
@@ -763,7 +766,8 @@ namespace GisSmartTools
             if (bmp == null) return bmp;
             int featurecount = collection.featureList.Count;
             /////////////////????????????????????????/坐标系问题
-            RSTransform rstransform = new RSTransform_WGS84_WEBMOCARTO();
+            RSTransform rstransform = RSTransformFactory.getRSTransform(collection.featureList[0].schema.rs, mapcontent.srs);
+            //RSTransform rstransform = new RSTransform_WGS84_WEBMOCARTO();
             using (bmp.GetBitmapContext())
             {
                 foreach (Feature feature in collection.featureList)
@@ -958,6 +962,7 @@ namespace GisSmartTools
         {
             ScreenPoint sPoint = new ScreenPoint();
             sPoint.X = Convert.ToInt32((point.X - moffsetX) / DisplayScale);
+
             sPoint.Y = Convert.ToInt32((moffsetY - point.Y) / DisplayScale);
             return sPoint;
         }
@@ -983,6 +988,17 @@ namespace GisSmartTools
             double miny = moffsetY - (screen_rect.Y + screen_rect.Height) * DisplayScale;
             return new Geometry.Rectangle(minx, miny, maxx, maxy);
         }
+
+        public System.Drawing.Rectangle ToScreenRect(GisSmartTools.Geometry.Rectangle map_rect)
+        {
+            int screen_rect_x = (int)((map_rect.minX - moffsetX) / DisplayScale);
+            int  screen_rect_y = (int)((moffsetY -  map_rect.maxY)/ DisplayScale);
+            int screen_width = (int)((map_rect.maxX - moffsetX)/ DisplayScale - screen_rect_x);
+            int screen_height =(int)((moffsetY - map_rect.minY) / DisplayScale - screen_rect_y);
+           return  new System.Drawing.Rectangle(screen_rect_x, screen_rect_y, screen_width, screen_height);
+        }
+
+       
 
         /// <summary>
         /// 以指定点为中心，以指定系数进行缩放
@@ -1321,7 +1337,8 @@ namespace GisSmartTools
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
 
-            RSTransform rstransform = new RSTransform_WGS84_WEBMOCARTO();
+           
+            //RSTransform rstransform = new RSTransform_WGS84_WEBMOCARTO();
             switch (MapOption)
             {
                 case MapOptionStatus.ZoomIn:
@@ -1348,6 +1365,7 @@ namespace GisSmartTools
                     if (mapcontent.layerlist.Count == 0) return;
                     if (focuslayer == null) focuslayer = mapcontent.layerlist[0];
                     //获取坐标转换接口函数
+                    RSTransform rstransform = RSTransformFactory.getRSTransform(focuslayer.getReference(), mapcontent.srs);
                     Filter_Envelop filter = new Filter_Envelop(maprect, rstransform);
                     FeatureCollection collection = focuslayer.featuresource.GetFeatures(filter);
                     if (collection.featureList.Count != 0)
@@ -1383,7 +1401,7 @@ namespace GisSmartTools
                                     this.mapcontrol_refresh(); return;
                                 }
                                 //获取坐标转换接口函数
-                                Filter_Envelop filter_select_edit = new Filter_Envelop(maprect_select_edit, rstransform);
+                                Filter_Envelop filter_select_edit = new Filter_Envelop(maprect_select_edit, editmanager.rstransform);
                                 editmanager.selectedFeatureCollection = tmplayer.featuresource.GetFeatures(filter_select_edit);
 
                                 if (editmanager.selectedFeatureCollection.featureList.Count != 0)
@@ -1410,7 +1428,8 @@ namespace GisSmartTools
                     if (mapcontent.layerlist.Count == 0) return;
                     if (focuslayer == null) focuslayer = mapcontent.layerlist[0];
                     //获取坐标转换接口函数
-                    Filter_Envelop filter_select = new Filter_Envelop(maprect_select, rstransform);
+                    RSTransform rstransform1 = RSTransformFactory.getRSTransform(focuslayer.getReference(), mapcontent.srs);
+                    Filter_Envelop filter_select = new Filter_Envelop(maprect_select, rstransform1);
                     FeatureCollection collection_select = focuslayer.featuresource.GetFeatures(filter_select);
                     if (collection_select.featureList.Count != 0)
                     {
@@ -1500,6 +1519,7 @@ namespace GisSmartTools
         public void SetDefaultoffsetandDisplayScale(mapcontent mapcontent)
         {
             Geometry.Rectangle rect = mapcontent.GetRefernectRectangle();
+            //Geometry.Rectangle rect = TransformRect(map_rect);
             if (rect.minX >= rect.maxX || rect.minY >= rect.maxY)
             {
                 DisplayScale = 1;
@@ -1514,6 +1534,14 @@ namespace GisSmartTools
             moffsetX = rect.minX;
             moffsetY = rect.maxY;
         }
+
+        //private Geometry.Rectangle TransformRect(Geometry.Rectangle map_rect)
+        //{
+        //    //PointD minxy = rstransfrom.sourceToTarget(new PointD(map_rect.minX, map_rect.minY));
+        //    //PointD maxxy = rstransfrom.sourceToTarget(new PointD(map_rect.maxX, map_rect.maxY));
+        //    //return new Geometry.Rectangle(minxy.X, minxy.Y, maxxy.X, maxxy.Y);
+        //}
+
         public void ZoomIn()
         {
 
@@ -1563,7 +1591,8 @@ namespace GisSmartTools
             {
                 MapOption = MapOptionStatus.Edit;
                 this.Cursor = mCur_Cross;
-                RSTransform transform = new RSTransform_WGS84_WEBMOCARTO();//????????????????????????????坐标系问题
+                RSTransform transform = RSTransformFactory.getRSTransform(layer.getReference(), mapcontent.srs);
+                //RSTransform transform = new RSTransform_WGS84_WEBMOCARTO();//????????????????????????????坐标系问题
                 editmanager = new EditingManager(layer, transform);
                 IsEditing = true;
             }

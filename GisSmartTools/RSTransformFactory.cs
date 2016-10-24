@@ -19,7 +19,20 @@ namespace GisSmartTools.RS
     {
         public static  RSTransform getRSTransform (ReferenceSystem sourceRS, ReferenceSystem targetRS)
         {
-            return null;
+            if (targetRS.srid == 0)
+            {
+                return new RSTransform_NO_TRANSTRAM();
+            }
+            if (sourceRS.srid == 0)
+            {
+                //No transform
+                return new RSTransform_NO_TRANSTRAM();
+            }
+            else
+            {
+                return new RSTransform_WGS84_WEBMOCARTO();
+            }
         }
+        
     }
 }

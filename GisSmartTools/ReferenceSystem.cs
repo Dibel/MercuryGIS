@@ -8,5 +8,6 @@ namespace GisSmartTools.RS
     abstract public class ReferenceSystem
     {
         public OSGeo.OSR.SpatialReference spetialReference;
+        public int srid = 0;
     }
 }
