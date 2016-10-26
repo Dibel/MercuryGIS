@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GisSmartTools"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" SizeChanged="Image_SizeChanged" RenderOptions.BitmapScalingMode="LowQuality">
+             d:DesignHeight="300" d:DesignWidth="300" SizeChanged="Image_SizeChanged" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased">
     <Image.Resources>
         <ResourceDictionary>
             <TextBlock x:Key="Pan" Cursor="Resources/Pan.cur"/>

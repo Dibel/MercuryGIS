@@ -23,6 +23,7 @@ using GisSmartTools.Data;
 using GisSmartTools;
 using GisSmartTools.Support;
 using GisSmartTools.Geometry;
+using WpfColorFontDialog;
 
 namespace MercuryGIS
 {
@@ -237,6 +238,7 @@ namespace MercuryGIS
             }
             else
             {
+                groupEdit.Visibility = Visibility.Collapsed;
                 //mapControl.MapMode = Mode.None;
             }
         }
@@ -472,35 +474,43 @@ namespace MercuryGIS
 
         private void btnMapping_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "PNG File (.png)|*.png";
-            if (dialog.ShowDialog() == true)
-            {
-                string path = dialog.FileName;
-                //RenderTargetBitmap bmp = new RenderTargetBitmap((int)mapControl.RenderSize.Width, (int)mapControl.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
-                //bmp.Render(mapControl);
-                Rect bounds = VisualTreeHelper.GetDescendantBounds(mapControl);
-                double dpi = 96d;
+
+            mapping_view.IsEnabled = true;
+            mapping_view.IsSelected = true;
+            groupMap.Visibility = Visibility.Visible;
+            TabStart.IsEnabled = false;
+            TabMap.IsSelected = true;
+            mapping.SetData(mapControl.mapcontent, mapControl.globalbmp);
+            mapControl.Pan();
+            //SaveFileDialog dialog = new SaveFileDialog();
+            //dialog.Filter = "PNG File (.png)|*.png";
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    string path = dialog.FileName;
+            //    //RenderTargetBitmap bmp = new RenderTargetBitmap((int)mapControl.RenderSize.Width, (int)mapControl.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
+            //    //bmp.Render(mapControl);
+            //    Rect bounds = VisualTreeHelper.GetDescendantBounds(mapControl);
+            //    double dpi = 96d;
 
 
-                RenderTargetBitmap bmp = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+            //    RenderTargetBitmap bmp = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
 
 
-                DrawingVisual dv = new DrawingVisual();
-                using (DrawingContext dc = dv.RenderOpen())
-                {
-                    VisualBrush vb = new VisualBrush(mapControl);
-                    dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
-                }
+            //    DrawingVisual dv = new DrawingVisual();
+            //    using (DrawingContext dc = dv.RenderOpen())
+            //    {
+            //        VisualBrush vb = new VisualBrush(mapControl);
+            //        dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+            //    }
 
-                bmp.Render(dv);
-                BitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bmp));
-                using (Stream stream = File.Create(path))
-                {
-                    encoder.Save(stream);
-                }
-            }
+            //    bmp.Render(dv);
+            //    BitmapEncoder encoder = new PngBitmapEncoder();
+            //    encoder.Frames.Add(BitmapFrame.Create(bmp));
+            //    using (Stream stream = File.Create(path))
+            //    {
+            //        encoder.Save(stream);
+            //    }
+            //}
             
 
         }
@@ -703,6 +713,111 @@ namespace MercuryGIS
                 mapControl.mapcontent.srs.srid = 0;
                 mapControl.SetDefaultoffsetandDisplayScale(mapControl.mapcontent);
                 mapControl.mapcontrol_refresh();
+            }
+        }
+
+        private void btnTitle_Click(Object sender, RoutedEventArgs e)
+        {
+            if (btnTitle.IsChecked == true)
+            {
+                mapping.IsTitle = true;
+            }
+            else
+            {
+                mapping.IsTitle = false;
+            }
+            mapping.Refresh();
+        }
+
+        private void btnLegend_Click(Object sender, RoutedEventArgs e)
+        {
+            mapping.IsLegend = (bool)btnLegend.IsChecked;
+            mapping.Refresh();
+        }
+
+        private void btnEditTitle_Click(Object sender, RoutedEventArgs e)
+        {
+            Title dialog = new Title(mapping.title.text, mapping.GetTitleFont());
+            if (dialog.ShowDialog() == true)
+            {
+                string title = dialog.title;
+                FontInfo info = dialog.font;
+                mapping.title.text = title;
+                mapping.SetTitleFont(info);
+            }
+        }
+
+        private void btnEditLegend_Click(Object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void btnSaveMap_Click(Object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "PNG File (.png)|*.png";
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+                if (mapping.Save(path))
+                {
+                    MessageBox.Show("保存成功");
+                }
+                else
+                {
+                    MessageBox.Show("保存失败！");
+                }
+            }
+        }
+
+        private void btnReturn_Click(Object sender, RoutedEventArgs e)
+        {
+            mapping_view.IsEnabled = false;
+            editing_view.IsSelected = true;
+            groupMap.Visibility = Visibility.Collapsed;
+            TabStart.IsEnabled = true;
+            TabStart.IsSelected = true;
+            //mapping.SetData(mapControl.mapcontent, mapControl.globalbmp);
+            //mapControl.Pan();
+        }
+
+        private void mapping_view_IsActiveChanged(Object sender, EventArgs e)
+        {
+            if (mapping_view.IsActive && groupMap.Visibility == Visibility.Visible)
+            {
+                mapping.SetBmp(mapControl.globalbmp);
+            }
+        }
+
+        private void btnEditLegendTitle_Click(Object sender, RoutedEventArgs e)
+        {
+            var font = mapping.GetLegendTitleFont();
+            ColorFontDialog dialog = new ColorFontDialog();
+            dialog.Font = font;
+
+            if (dialog.ShowDialog() == true)
+            {
+                font = dialog.Font;
+                if (font != null)
+                {
+                    mapping.SetLegendTitleFont(font);
+                }
+            }
+        }
+
+        private void btnEditLegendText_Click(Object sender, RoutedEventArgs e)
+        {
+            var font = mapping.GetLegendTextFont();
+            ColorFontDialog dialog = new ColorFontDialog();
+            dialog.Font = font;
+
+            if (dialog.ShowDialog() == true)
+            {
+                font = dialog.Font;
+                if (font != null)
+                {
+                    mapping.SetLegendTextFont(font);
+                }
             }
         }
     }

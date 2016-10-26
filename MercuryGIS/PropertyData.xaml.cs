@@ -128,10 +128,10 @@ namespace MercuryGIS
                                 value = Convert.ToDouble(((TextBox)e.EditingElement).Text);
                                 break;
                             case OSGeo.OGR.FieldType.OFTString:
-                                value = (String)dt.Rows[rowid][colid];
+                                value = ((TextBox)e.EditingElement).Text;
                                 break;
                             case OSGeo.OGR.FieldType.OFTWideString:
-                                value = (String)dt.Rows[rowid][colid];
+                                value = ((TextBox)e.EditingElement).Text;
                                 break;
                         }
                         if (value != null) featuresource.features.GetFeatureByID(fid).ReviseAttribute(fn, value);

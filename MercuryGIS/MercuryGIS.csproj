@@ -104,6 +104,14 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WpfColorFontDialog, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfColorFontDialog.1.0.2\lib\WpfColorFontDialog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WriteableBitmapEx.Wpf, Version=1.5.0.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GisSmartTools\bin\Debug\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
       <Private>True</Private>
@@ -138,6 +146,9 @@
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="LayerModel.cs" />
+    <Compile Include="Mapping.xaml.cs">
+      <DependentUpon>Mapping.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MetaData.xaml.cs">
       <DependentUpon>MetaData.xaml</DependentUpon>
     </Compile>
@@ -177,6 +188,9 @@
     <Compile Include="SymbolSelector.xaml.cs">
       <DependentUpon>SymbolSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Title.xaml.cs">
+      <DependentUpon>Title.xaml</DependentUpon>
+    </Compile>
     <Page Include="InputBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -193,6 +207,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Mapping.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MetaData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -242,6 +260,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SymbolSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Title.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -368,6 +390,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Projection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Close.png" />
+    <Resource Include="Resources\Legend16.png" />
+    <Resource Include="Resources\Legend32.png" />
+    <Resource Include="Resources\Title16.png" />
+    <Resource Include="Resources\Title32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

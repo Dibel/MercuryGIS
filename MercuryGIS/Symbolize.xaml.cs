@@ -178,7 +178,7 @@ namespace MercuryGIS
             else if (classRadio.IsChecked == true)
             {
                 int classNum = Convert.ToInt32(number.Text);
-                style = GisSmartTools.Support.Style.createRankStyle(featuresource, curField, classNum, Colors.Red, Colors.Green);
+                style = GisSmartTools.Support.Style.createRankStyle(featuresource, curField, classNum, Colors.Green, Colors.Red);
                 rulelist = style.rulelist;
                 InitializeList(rulelist);
                     //List<string> values = curLayer.GetAllValues(curField);
