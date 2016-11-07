@@ -20,8 +20,8 @@
         <Button Content="≤" HorizontalAlignment="Left" Margin="47,357,0,0" VerticalAlignment="Top" Width="32" Click="Button_Click_2"/>
         <Button Content="( )" HorizontalAlignment="Left" Margin="10,384,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2"/>
         <Button Content="and" HorizontalAlignment="Left" Margin="47,384,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2"/>
-        <Button Content="like" HorizontalAlignment="Left" Margin="84,303,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2"/>
-        <Button Content="is" HorizontalAlignment="Left" Margin="84,330,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2"/>
+        <Button Content="like" HorizontalAlignment="Left" Margin="84,303,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2" IsEnabled="False"/>
+        <Button Content="is" HorizontalAlignment="Left" Margin="84,330,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2" IsEnabled="False"/>
         <Button Content="not" HorizontalAlignment="Left" Margin="84,357,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2"/>
         <Button Content="or" HorizontalAlignment="Left" Margin="84,384,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="0.594,2.227" Click="Button_Click_2"/>
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="54" Margin="134,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="335" Grid.ColumnSpan="2"/>

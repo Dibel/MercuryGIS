@@ -35,6 +35,11 @@ namespace GisSmartTools
             return System.Windows.Media.Color.FromArgb(input.a, input.r, input.g, input.b);
         }
 
+        public static implicit operator System.Drawing.Color(Color input)
+        {
+            return System.Drawing.Color.FromArgb(input.a, input.r, input.g, input.b);
+        }
+
         public static implicit operator int (Color input)
         {
             var col = 0;

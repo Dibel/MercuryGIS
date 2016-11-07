@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfColorFontDialog;
 
 namespace MercuryGIS
 {
@@ -20,6 +21,8 @@ namespace MercuryGIS
     public partial class SelectField : Window
     {
         public string field;
+        public bool Checked = true;
+        public FontInfo font;
         public SelectField()
         {
             InitializeComponent();
@@ -35,12 +38,30 @@ namespace MercuryGIS
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             field = comboBox.SelectedItem.ToString();
+            if (checkBox.IsChecked == true)
+            {
+                Checked = true;
+            }
+            else
+            {
+                Checked = false;
+            }
             this.DialogResult = true;
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
+        }
+
+        private void button_Click(Object sender, RoutedEventArgs e)
+        {
+            ColorFontDialog dialog = new ColorFontDialog();
+            dialog.Font = FontInfo.GetControlFont(label);
+            if (dialog.ShowDialog() == true)
+            {
+                font = dialog.Font;
+            }
         }
     }
 }

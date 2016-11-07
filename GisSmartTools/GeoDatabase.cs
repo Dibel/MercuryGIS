@@ -115,7 +115,7 @@ namespace GisSmartTools.Data
             //to support chinese path
             //OSGeo.GDAL.Gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
             //to support chinese field name
-            //OSGeo.GDAL.Gdal.SetConfigOption("SHAPE_ENCODING", "");
+            OSGeo.GDAL.Gdal.SetConfigOption("SHAPE_ENCODING", "");
             OSGeo.OGR.Driver dr = OSGeo.OGR.Ogr.GetDriverByName("ESRI shapefile");
             if (dr == null) return null;
             //第二参数为0表明只读模式
@@ -319,7 +319,7 @@ namespace GisSmartTools.Data
         /// <param name="featuresource"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static Boolean SaveFeatureSource2File(FeatureSource featuresource,string path)
+        public static Boolean SaveFeatureSource2File(FeatureSource featuresource,string path, string filename)
         {
             Ogr.RegisterAll();
             //to support chinese path
@@ -340,7 +340,9 @@ namespace GisSmartTools.Data
             //create a datasource, if successfully, a shp file would be created
             DataSource oDs = oDriver.CreateDataSource(pathPrefix + "\\" + pathPostfix, null);
             Schema tmpSchema = featuresource.schema;
-            Layer layer = oDs.CreateLayer(tmpSchema.name, tmpSchema.rs.spetialReference, tmpSchema.geometryType, null);
+            Layer layer = oDs.CreateLayer(filename, tmpSchema.rs.spetialReference, tmpSchema.geometryType, null);
+
+            //Layer layer = oDs.CreateLayer(tmpSchema.name, tmpSchema.rs.spetialReference, tmpSchema.geometryType, null);
 
             //insert all the fields to layer
             //use index instead of field name to avoid the error caused by chinese words

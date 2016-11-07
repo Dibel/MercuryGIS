@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MercuryGIS"
         mc:Ignorable="d"
-        Title="SelectField" Height="175" Width="382.5">
+        Title="添加注记" Height="250" Width="382.5">
     <Grid>
-        <Label x:Name="label" Content="选择字段" HorizontalAlignment="Left" Margin="40,20,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="60,60,0,0" VerticalAlignment="Top" Width="175"/>
-        <Button x:Name="btnOk" Content="确定" HorizontalAlignment="Left" Margin="190,115,0,0" VerticalAlignment="Top" Width="75" Click="btnOk_Click"/>
-        <Button x:Name="btnCancel" Content="取消" HorizontalAlignment="Left" Margin="292,115,0,0" VerticalAlignment="Top" Width="76" Click="btnCancel_Click"/>
+        <Label x:Name="label" Content="选择字段" HorizontalAlignment="Left" Margin="40,69,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="60,109,0,0" VerticalAlignment="Top" Width="175"/>
+        <Button x:Name="btnOk" Content="确定" HorizontalAlignment="Left" Margin="190,164,0,0" VerticalAlignment="Top" Width="75" Click="btnOk_Click"/>
+        <Button x:Name="btnCancel" Content="取消" HorizontalAlignment="Left" Margin="292,164,0,0" VerticalAlignment="Top" Width="76" Click="btnCancel_Click"/>
+        <CheckBox x:Name="checkBox" Content="开启注记" HorizontalAlignment="Left" Margin="40,28,0,0" VerticalAlignment="Top" IsChecked="True"/>
+        <Button x:Name="button" Content="选择字体与颜色" HorizontalAlignment="Left" Margin="40,164,0,0" VerticalAlignment="Top" Width="96" Click="button_Click"/>
 
     </Grid>
 </Window>

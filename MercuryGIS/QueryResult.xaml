@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MercuryGIS"
         mc:Ignorable="d"
-        Title="查询结果" Height="435" Width="457.5" Closing="Window_Closed">
+        Title="查询结果" Height="435" Width="600.5" Closing="Window_Closed">
     <Grid>
-        <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="408" VerticalAlignment="Top" Width="130" Margin="0,0,0,-0.5"  SelectedItemChanged="treeView_SelectedItemChanged"/>
-        <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" HorizontalAlignment="Left" Margin="135,0,0,-0.5" VerticalAlignment="Top" Height="408" Width="317">
+        <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="Auto" VerticalAlignment="Stretch" Width="130" Margin="0,0,0,-0.5"  SelectedItemChanged="treeView_SelectedItemChanged"/>
+        <DataGrid x:Name="dataGrid" AutoGenerateColumns="True" HorizontalAlignment="Stretch" Margin="135,0,0,0" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
             <DataGrid.Columns>
             </DataGrid.Columns>
         </DataGrid>

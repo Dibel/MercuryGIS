@@ -131,8 +131,15 @@ namespace GisSmartTools.PGIOyichao
                         dbcmd.Parameters.AddWithValue("p"+index,flst[i].attributes[field]);
                         index++;
                     }
-                    sql+="geom) VALUES('"+flst[i].featureID+"',"+temp+"st_geomfromText('"+Feature2WKT.Geometry2WKT(flst[i].geometry)+"',"+srid+"))";
+                    if (Type2String.wkbGeometryType2String(fs.schema.geometryType) == "MULTIPOLYGON")
+                    {
 
+                        sql += "geom) VALUES('" + flst[i].featureID + "'," + temp + "st_multi(st_geomfromText('" + Feature2WKT.Geometry2WKT(flst[i].geometry) + "'," + srid + ")))";
+                    }
+                    else
+                    {
+                        sql += "geom) VALUES('" + flst[i].featureID + "'," + temp + "st_geomfromText('" + Feature2WKT.Geometry2WKT(flst[i].geometry) + "'," + srid + "))";
+                    }
                     dbcmd.CommandText = sql;
                     dbcmd.ExecuteNonQuery();
                 }
@@ -263,9 +270,10 @@ namespace GisSmartTools.PGIOyichao
                     }
                     sql += field + " " + Type2String.OGRFiledType2String(schema.fields[field].GetFieldType()) + ",";
                 }
-                sql += "geom geometry(" + Type2String.wkbGeometryType2String(schema.geometryType) + "," + srid + "));";
+            sql += "geom geometry(" + Type2String.wkbGeometryType2String(schema.geometryType) + "," + srid + "));";
+            //sql += "geom geometry(" + Type2String.wkbGeometryType2String(schema.geometryType) + "," + srid + "));";
 
-                NpgsqlConnection conn = new NpgsqlConnection(connStr);
+            NpgsqlConnection conn = new NpgsqlConnection(connStr);
                 conn.Open();
                 IDbCommand dbcmd = conn.CreateCommand();
                 dbcmd.CommandText = sql;

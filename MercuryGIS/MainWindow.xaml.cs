@@ -36,15 +36,17 @@ namespace MercuryGIS
         GeoDatabase gdb = null;
         //Layer curLayer;
         //Layer backupLayer;
+        WfsServer wfsserver;
         public MainWindow()
         {
             InitializeComponent();
             mapControl.AfterSelectedFeaturesEvent += mapControl_AfterSelectedFeaturesEvent;
         }
 
-        private void mapControl_AfterSelectedFeaturesEvent(FeatureCollection collenction)
+        private void mapControl_AfterSelectedFeaturesEvent(FeatureCollection collection)
         {
-            throw new NotImplementedException();
+            QueryResult form = new QueryResult(collection);
+            form.Show();
         }
 
         public void OnCheckItem(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -248,6 +250,10 @@ namespace MercuryGIS
             Point scrPoint = e.GetPosition(mapControl);
             PointD mapPoint = mapControl.ToMapPoint(scrPoint);
             location.Value = "(" + mapPoint.X.ToString() + ", " + mapPoint.Y.ToString() + ")";
+            if (groupMap.Visibility == Visibility.Visible)
+            {
+                mapping.SetBmp(mapControl.globalbmp);
+            }
         }
 
         private void btnZoomIn_Click(object sender, RoutedEventArgs e)
@@ -518,25 +524,69 @@ namespace MercuryGIS
         //文本注记
         private void btnMapLable_Click(object sender, RoutedEventArgs e)
         {
-            //SelectField form = new SelectField(curLayer.GetFields());
-            //if (form.ShowDialog() == true)
-            //{
-            //    curLayer.IsLabelShown = true;
-            //    curLayer.LabelField = form.field;
-            //    mapControl.Refresh();
-            //}
+            GisSmartTools.Support.Layer curLayer = mapControl.focuslayer;
+            if (curLayer == null) curLayer = mapControl.mapcontent.layerlist[0];
+            SelectField form = new SelectField(curLayer.featuresource.schema.fields.Keys.ToList());
+            if (form.ShowDialog() == true)
+            {
+                GisSmartTools.Support.Style style = curLayer.style;
+                PortableFontDesc font = new PortableFontDesc();
+                if (form.font != null)
+                {
+                    double size = form.font.Size;
+                    string fontname = form.font.Family.Source;
+                    bool italic = false;
+                    bool bold = false;
+                    if (form.font.Style != FontStyles.Normal)
+                    {
+                        italic = true;
+                    }
+                    if (form.font.Weight != FontWeights.Normal)
+                    {
+                        bold = true;
+                    }
+                    font = new PortableFontDesc(name: fontname, emsize: (int)size, isbold: bold, isitalic: italic, cleartype: false);
+                }
+
+                foreach (var rule in style.rulelist)
+                {
+                    textsymbolizer sym = (textsymbolizer)rule.textsymbolizer;
+                    sym.visible = form.Checked;
+                    sym.attributename = form.field;
+                    if (form.font != null)
+                    {
+                        sym.color = form.font.BrushColor.Color;
+                        sym.font = font;
+                    }
+                }
+                if (style.rulelist.Count == 0)
+                {
+                    var rule = style.defaultRule;
+                    textsymbolizer sym = (textsymbolizer)rule.textsymbolizer;
+                    sym.visible = form.Checked;
+                    sym.attributename = form.field;
+                    if (form.font != null)
+                    {
+                        sym.color = form.font.BrushColor.Color;
+                        sym.font = font;
+                    }
+                }
+                mapControl.mapcontrol_refresh();
+                //curLayer.IsLabelShown = true;
+                //curLayer.LabelField = form.field;
+                //mapControl.Refresh();
+            }
         }
 
         private void btnQueryByAttri_Click(object sender, RoutedEventArgs e)
         {
-            //QueryAttribute form = new QueryAttribute(mapControl);
-            //form.Show();
+            QueryAttribute form = new QueryAttribute(mapControl);
+            form.Show();
         }
 
         private void btnQueryByLocat_Click(object sender, RoutedEventArgs e)
         {
-            mapControl.SelectFeatures();
-            
+            mapControl.Identify();
         }
 
         private void mapControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -818,6 +868,56 @@ namespace MercuryGIS
                 {
                     mapping.SetLegendTextFont(font);
                 }
+            }
+        }
+
+        private void btnWFS_Click(Object sender, RoutedEventArgs e)
+        {
+            if (wfsserver != null)
+            {
+                wfsserver.Stop();
+                wfsserver.Dispose();
+            }
+            wfsserver = new WfsServer(9999);
+            wfsserver.mapcontent = mapControl.mapcontent;
+            //wfsserver.Stop();
+            wfsserver.Run();
+            System.Diagnostics.Process.Start("http://localhost:9999/MercuryGIS/wfs.html");
+        }
+
+        private void Export_Click(Object sender, RoutedEventArgs e)
+        {
+            int id = treeView_selectedindex();
+            if (id >= 0)
+            {
+                LayerModel temp = (LayerModel)treeView.Items[id];
+                var layer = mapControl.mapcontent.GetLayerByName(temp.Name);
+                SaveFileDialog dialog = new SaveFileDialog();
+                dialog.Filter = "Shapefile (.shp)|*.shp";
+                if (dialog.ShowDialog() == true)
+                {
+                    string path = dialog.FileName;
+                    string filename = System.IO.Path.GetFileNameWithoutExtension(path);
+                    FeatureSource fs = layer.featuresource;
+                    if (SHPGeoDataBase.SaveFeatureSource2File(fs, path, filename))
+                    {
+                        MessageBox.Show("保存成功");
+                    }
+                    else
+                    {
+                        MessageBox.Show("保存失败！");
+                    }
+                }
+                //mapControl.Map.MoveUpOneStep(id);
+                //mapControl.Refresh();
+            }
+        }
+
+        private void mapControl_MouseWheel(Object sender, MouseWheelEventArgs e)
+        {
+            if (groupMap.Visibility == Visibility.Visible)
+            {
+                mapping.SetBmp(mapControl.globalbmp);
             }
         }
     }

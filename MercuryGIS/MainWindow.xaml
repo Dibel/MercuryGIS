@@ -9,7 +9,7 @@
         xmlns:MercuryGISControlWPF="clr-namespace:GisSmartTools;assembly=MapControlWPF"
         xmlns:MercuryGISControl="clr-namespace:MercuryGISControl;assembly=MercuryGISControl" x:Class="MercuryGIS.MainWindow"
         mc:Ignorable="d"
-        Title="MercuryGIS" Height="600" Width="700" SizeChanged="RibbonWindow_SizeChanged">
+        Title="MercuryGIS" Height="600" Width="760" SizeChanged="RibbonWindow_SizeChanged">
 
     <Fluent:RibbonWindow.Resources>
         <ResourceDictionary>
@@ -18,9 +18,10 @@
             <TextBlock x:Key="ZoomOut" Cursor="Resources/ZoomOut.cur"/>
 
             <ContextMenu x:Key="ItemContextMenu">
-                <MenuItem  Header="上移" Click="MoveUp_Click"/>
-                <MenuItem  Header="下移" />
-                <MenuItem  Header="重命名"/>
+                <MenuItem Header="上移" Click="MoveUp_Click"/>
+                <MenuItem Header="下移" />
+                <MenuItem Header="重命名"/>
+                <MenuItem Header="导出为Shapefile" Click="Export_Click"/>
                 <MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>
                 <MenuItem Header="属性数据" Click="Data_Click"/>
             </ContextMenu>
@@ -144,6 +145,8 @@
 						LargeIcon="Resources/TextLabel.png" Click="btnMapLable_Click"/>
                     <Fluent:Button x:Name="btnMapping" Header="生成地图"
 						LargeIcon="Resources/GenerateMap.png" Click="btnMapping_Click"/>
+                    <Fluent:Button x:Name="btnWFS" Header="发布WFS服务"
+						LargeIcon="Resources/WFS.png" Click="btnWFS_Click"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
 
@@ -259,7 +262,7 @@
                         </xcad:LayoutAnchorablePane>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument x:Name="editing_view" ContentId="document1" Title="编辑视图" CanClose="False">
-                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True"  MouseMove="mapControl_MouseMove"/>
+                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True"  MouseMove="mapControl_MouseMove" MouseWheel="mapControl_MouseWheel"/>
                                 <!--<MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left"  VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>-->
                             </xcad:LayoutDocument>
                             <xcad:LayoutDocument x:Name="mapping_view" ContentId="document2" Title="制图视图" IsEnabled="False" CanClose="False" IsActiveChanged="mapping_view_IsActiveChanged">

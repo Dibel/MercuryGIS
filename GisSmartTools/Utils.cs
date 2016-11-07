@@ -76,21 +76,68 @@ namespace GisSmartTools.Data
 
         public static Color[] GetLinearColorList(Color startcolor,Color endcolor,int num)
         {
+            System.Drawing.Color start = startcolor;
+            System.Drawing.Color end = endcolor;
             Color[] colorarray = new Color[num];
-            int internal_A = (endcolor.a - startcolor.a) / (num-1);
-            int internal_R = (endcolor.r- startcolor.r) / (num - 1);
-            int internal_G = (endcolor.g - startcolor.g) / (num - 1);
-            int internal_B = (endcolor.b - startcolor.b) / (num - 1);
+
+            double start_h, start_s, start_v;
+            double end_h, end_s, end_v;
+            ColorToHSV(start, out start_h, out start_s, out start_v);
+            ColorToHSV(end, out end_h, out end_s, out end_v);
+
+            double h = (end_h - start_h) / (num - 1);
+            double s = (end_s - start_s) / (num - 1);
+            double v = (end_v - start_v) / (num - 1);
+            //int internal_A = (endcolor.a - startcolor.a) / (num - 1);
+            //int internal_R = (endcolor.r- startcolor.r) / (num - 1);
+            //int internal_G = (endcolor.g - startcolor.g) / (num - 1);
+            //int internal_B = (endcolor.b - startcolor.b) / (num - 1);
             colorarray[0] = startcolor;
             colorarray[num - 1] = endcolor;
             for(int i = 1;i<num-1;i++)
             {
-                colorarray[i] = new Color((byte)(startcolor.a + i * internal_A),
-                    (byte)(startcolor.r+i*internal_R), (byte)(startcolor.g+i*internal_G), (byte)(startcolor.b+i*internal_B));
+                colorarray[i] = ColorFromHSV(start_h + i * h, start_s + i * s, start_v + i * v);
+                //colorarray[i] = new Color((byte)(startcolor.a + i * internal_A),
+                //    (byte)(startcolor.r+i*internal_R), (byte)(startcolor.g+i*internal_G), (byte)(startcolor.b+i*internal_B));
             }
             return colorarray;
         }
 
-        
+        public static void ColorToHSV(System.Drawing.Color color, out double hue, out double saturation, out double value)
+        {
+            int max = Math.Max(color.R, Math.Max(color.G, color.B));
+            int min = Math.Min(color.R, Math.Min(color.G, color.B));
+
+            hue = color.GetHue();
+            saturation = (max == 0) ? 0 : 1d - (1d * min / max);
+            value = max / 255d;
+        }
+
+        public static Color ColorFromHSV(double hue, double saturation, double value)
+        {
+            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+            double f = hue / 60 - Math.Floor(hue / 60);
+
+            value = value * 255;
+            byte v = Convert.ToByte(value);
+            byte p = Convert.ToByte(value * (1 - saturation));
+            byte q = Convert.ToByte(value * (1 - f * saturation));
+            byte t = Convert.ToByte(value * (1 - (1 - f) * saturation));
+
+            if (hi == 0)
+                return new Color(255, v, t, p);
+            else if (hi == 1)
+                return new Color(255, q, v, p);
+            else if (hi == 2)
+                return new Color(255, p, v, t);
+            else if (hi == 3)
+                return new Color(255, p, q, v);
+            else if (hi == 4)
+                return new Color(255, t, p, v);
+            else
+                return new Color(255, v, p, q);
+        }
+
+
     }
 }

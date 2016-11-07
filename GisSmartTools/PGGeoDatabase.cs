@@ -110,11 +110,11 @@ namespace GisSmartTools.Data
         /// </summary>
         /// <param name="tablename"></param>
         /// <returns></returns>
-        public Boolean SaveSHPFeatureSource(string tablename,string path)
+        public Boolean SaveSHPFeatureSource(string tablename,string path, string filename)
         {
             if(this.featureSources.ContainsKey(tablename))
             {
-                return SHPGeoDataBase.SaveFeatureSource2File(this.featureSources[tablename], path);
+                return SHPGeoDataBase.SaveFeatureSource2File(this.featureSources[tablename], path, filename);
 
             }
             return false;

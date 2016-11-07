@@ -16,6 +16,7 @@ using GisSmartTools.Support;
 using GisSmartTools.Data;
 using OSGeo.OGR;
 using System.Windows;
+using Microsoft.Samples.CustomControls;
 
 namespace MercuryGIS
 {
@@ -64,16 +65,28 @@ namespace MercuryGIS
             {
                 number.Visibility = Visibility.Hidden;
                 numberLabel.Visibility = Visibility.Hidden;
+                label.Visibility = Visibility.Hidden;
+                label_Copy.Visibility = Visibility.Hidden;
+                start.Visibility = Visibility.Hidden;
+                end.Visibility = Visibility.Hidden;
             }
             else if (uniqueRadio.IsChecked == true)
             {
                 number.Visibility = Visibility.Hidden;
                 numberLabel.Visibility = Visibility.Hidden;
+                label.Visibility = Visibility.Hidden;
+                label_Copy.Visibility = Visibility.Hidden;
+                start.Visibility = Visibility.Hidden;
+                end.Visibility = Visibility.Hidden;
             }
             else
             {
                 number.Visibility = Visibility.Visible;
                 numberLabel.Visibility = Visibility.Visible;
+                label.Visibility = Visibility.Visible;
+                label_Copy.Visibility = Visibility.Visible;
+                start.Visibility = Visibility.Visible;
+                end.Visibility = Visibility.Visible;
             }
         }
 
@@ -178,7 +191,7 @@ namespace MercuryGIS
             else if (classRadio.IsChecked == true)
             {
                 int classNum = Convert.ToInt32(number.Text);
-                style = GisSmartTools.Support.Style.createRankStyle(featuresource, curField, classNum, Colors.Green, Colors.Red);
+                style = GisSmartTools.Support.Style.createRankStyle(featuresource, curField, classNum, new GisSmartTools.Color(255, 254, 240, 217), new GisSmartTools.Color(255, 179, 0, 0));
                 rulelist = style.rulelist;
                 InitializeList(rulelist);
                     //List<string> values = curLayer.GetAllValues(curField);
@@ -350,7 +363,7 @@ namespace MercuryGIS
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close();
         }
 
         private void Rectangle_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -419,6 +432,39 @@ namespace MercuryGIS
             //int id = Convert.ToInt32(((System.Windows.Shapes.Rectangle)e.Source).Name);
 
         }
+
+        private void start_MouseLeftButtonDown(Object sender, MouseButtonEventArgs e)
+        {
+            ColorPickerDialog picker = new ColorPickerDialog();
+            Brush brush = start.Fill;
+            picker.StartingColor = GetColor(brush);
+            picker.Owner = this;
+            if (picker.ShowDialog() == true)
+            {
+                start.Fill = new SolidColorBrush(picker.SelectedColor);
+                int classNum = Convert.ToInt32(number.Text);
+                style = GisSmartTools.Support.Style.createRankStyle(featuresource, curField, classNum, GetColor(start.Fill), GetColor(end.Fill));
+                rulelist = style.rulelist;
+                InitializeList(rulelist);
+            }
+        }
+
+        private void end_MouseLeftButtonDown(Object sender, MouseButtonEventArgs e)
+        {
+            ColorPickerDialog picker = new ColorPickerDialog();
+            Brush brush = end.Fill;
+            picker.StartingColor = GetColor(brush);
+            picker.Owner = this;
+            if (picker.ShowDialog() == true)
+            {
+                end.Fill = new SolidColorBrush(picker.SelectedColor);
+                int classNum = Convert.ToInt32(number.Text);
+                style = GisSmartTools.Support.Style.createRankStyle(featuresource, curField, classNum, GetColor(start.Fill), GetColor(end.Fill));
+                rulelist = style.rulelist;
+                InitializeList(rulelist);
+            }
+        }
+        
     }
 
     public class ColorModel

@@ -56,7 +56,7 @@ namespace GisSmartTools.Support
         public string label = "";
         public bool visible = true;
         public PointStyle pointstyle = PointStyle.CIRCLE_FILL;
-        public float size = 10;
+        public float size = 5;
         public double offset_x = 0;
         public double offset_y = 0;
         public Color color;
@@ -106,7 +106,7 @@ namespace GisSmartTools.Support
         public bool visible = true;
         public Color strokecolor;
         public Color fillcolor;
-        public float strokewidth = 2;
+        public float strokewidth = 1;
         public PolygonStyle polygonstyle = PolygonStyle.SOLID;
         public polygonsymbolizer()
         {
@@ -148,7 +148,7 @@ namespace GisSmartTools.Support
         public textsymbolizer()
         {
             this.sign = SymbolizerType.TEXT;
-            font = new PortableFontDesc(emsize: 14);
+            font = new PortableFontDesc(emsize: 8);
             color = Colors.Black;
         }
         public static textsymbolizer createdefaulttextsymbolizer()

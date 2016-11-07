@@ -86,6 +86,10 @@
     </Reference>
     <Reference Include="ogr_csharp, Version=1.0.5496.33904, Culture=neutral, PublicKeyToken=db5a52b08dc5b321" />
     <Reference Include="osr_csharp, Version=1.0.5496.33904, Culture=neutral, PublicKeyToken=db5a52b08dc5b321" />
+    <Reference Include="SharpHttpServer, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Qoollo.SharpHttpServer.0.1.0\lib\net40\SharpHttpServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

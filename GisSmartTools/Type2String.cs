@@ -17,7 +17,7 @@ namespace GisSmartTools.PGIOyichao
                 case OSGeo.OGR.wkbGeometryType.wkbLineString:
                     return "LINESTRING";
                 case OSGeo.OGR.wkbGeometryType.wkbPolygon:
-                    return "POLYGON";
+                    return "MULTIPOLYGON";
                 case OSGeo.OGR.wkbGeometryType.wkbMultiLineString:
                     return "MULTILINESTRING";
                 default:

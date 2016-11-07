@@ -88,8 +88,8 @@ namespace GisSmartTools
         public mapcontent mapcontent;
 
         public Layer focuslayer = null;//当前正在编辑或正处于被选择的图层，默认为mapcontent 的0号图层
-        public WriteableBitmap globalbmp = BitmapFactory.New(500, 500);
-        public WriteableBitmap textbmp = BitmapFactory.New(500, 500);
+        public WriteableBitmap globalbmp = BitmapFactory.New(800, 500);
+        public WriteableBitmap textbmp = BitmapFactory.New(800, 500);
         private WriteableBitmap bmp;
         private WriteableBitmap temp_textbmp;
         private WriteableBitmap linebmp;
@@ -292,7 +292,7 @@ namespace GisSmartTools
                     Object text = "";
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
-                        temp_textbmp.DrawString(screenPointF.X + (int)textsym.offset_x, screenPointF.Y + (int)textsym.offset_y, (System.Windows.Media.Color)textsym.color, textsym.font, text.ToString());
+                        temp_textbmp.DrawString(screenPointF.X + (int)textsym.offset_x, screenPointF.Y + (int)textsym.offset_y, (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
                     }
                 }
             }
@@ -516,7 +516,7 @@ namespace GisSmartTools
                     ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(polygon.maxX, polygon.maxY)));
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
-                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, textsym.font, text.ToString());
+                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
                         //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
                     }
                     //textbrush.Dispose();
@@ -692,7 +692,7 @@ namespace GisSmartTools
                     ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(line.maxX, line.maxY)));
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
-                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, textsym.font, text.ToString());
+                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
                         //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
                     }
                     //textbrush.Dispose();
@@ -1199,6 +1199,7 @@ namespace GisSmartTools
                             screen_rect = new System.Drawing.Rectangle((int)rect_x1, (int)rect_y1, (int)rect_width, (int)rect_width);
                             tempbmp.DrawRectangle((int)rect_x1, (int)rect_y1, (int)rect_x2, (int)rect_y2, Colors.Black);
                         }
+                        Thread.Sleep(10);
                         this.Source = tempbmp;
 
                     }
@@ -1494,6 +1495,7 @@ namespace GisSmartTools
             //pictureBox1.Image = globalbmp;
             //pictureBox1.Refresh();
 
+            globalbmp.Clear();
             bmp = BitmapFactory.New(bitmap_X, bitmap_Y);
             temp_textbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
             paintmap(this.mapcontent);
@@ -1501,8 +1503,9 @@ namespace GisSmartTools
             using (bmp.GetBitmapContext())
             {
                 bmp.Blit(rect, temp_textbmp, rect);
+                globalbmp.Blit(rect, bmp, rect);
             }
-            globalbmp = bmp;
+            //globalbmp = bmp;
             this.Source = globalbmp;
             //this.InvalidateVisual();
         }
@@ -1722,6 +1725,7 @@ namespace GisSmartTools
         {
             bitmap_Y = (int)e.NewSize.Height;
             bitmap_X = (int)e.NewSize.Width;
+            globalbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
             mapcontrol_refresh();
         }
     }
