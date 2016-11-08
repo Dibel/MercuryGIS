@@ -113,7 +113,7 @@ namespace GisSmartTools.Data
 
             OSGeo.OGR.Ogr.RegisterAll();
             //to support chinese path
-            //OSGeo.GDAL.Gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
+            OSGeo.GDAL.Gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
             //to support chinese field name
             OSGeo.GDAL.Gdal.SetConfigOption("SHAPE_ENCODING", "");
             OSGeo.OGR.Driver dr = OSGeo.OGR.Ogr.GetDriverByName("ESRI shapefile");

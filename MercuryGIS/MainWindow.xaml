@@ -19,7 +19,7 @@
 
             <ContextMenu x:Key="ItemContextMenu">
                 <MenuItem Header="上移" Click="MoveUp_Click"/>
-                <MenuItem Header="下移" />
+                <MenuItem Header="下移" Click="MoveDown_Click"/>
                 <MenuItem Header="重命名"/>
                 <MenuItem Header="导出为Shapefile" Click="Export_Click"/>
                 <MenuItem x:Name="Property" Header="图层属性" Click="Property_Click"/>

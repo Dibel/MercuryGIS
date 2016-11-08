@@ -96,7 +96,7 @@ namespace GisSmartTools
                     List<SimplePolyline> rings = new List<SimplePolyline>();
                     foreach (List<PointD> onelist in lists)
                     {
-                        //onelist.Add(onelist.First());
+                        onelist.Add(onelist.First());
                         SimplePolyline onering = new SimplePolyline(onelist);
                         rings.Add(onering);
                     }

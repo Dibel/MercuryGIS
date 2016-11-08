@@ -126,7 +126,7 @@ namespace GisSmartTools.PGIOyichao
                         {
                             continue;
                         }
-                        sql += field + ",";
+                        sql += "\"" + field + "\",";
                         temp+=":p"+index+",";
                         dbcmd.Parameters.AddWithValue("p"+index,flst[i].attributes[field]);
                         index++;
@@ -268,7 +268,7 @@ namespace GisSmartTools.PGIOyichao
                     {
                         continue;
                     }
-                    sql += field + " " + Type2String.OGRFiledType2String(schema.fields[field].GetFieldType()) + ",";
+                    sql += "\""+ field + "\" " + Type2String.OGRFiledType2String(schema.fields[field].GetFieldType()) + ",";
                 }
             sql += "geom geometry(" + Type2String.wkbGeometryType2String(schema.geometryType) + "," + srid + "));";
             //sql += "geom geometry(" + Type2String.wkbGeometryType2String(schema.geometryType) + "," + srid + "));";

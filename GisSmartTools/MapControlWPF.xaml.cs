@@ -292,6 +292,7 @@ namespace GisSmartTools
                     Object text = "";
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
+                        if (textsym.font == null) { textsym.font = new PortableFontDesc(emsize: 8); }
                         temp_textbmp.DrawString(screenPointF.X + (int)textsym.offset_x, screenPointF.Y + (int)textsym.offset_y, (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
                     }
                 }
@@ -480,8 +481,8 @@ namespace GisSmartTools
                         screenpointlist.Add(screenpointlist[0]);
                         screenpointlist.Add(screenpointlist[1]);
                         tempbmp1.FillPolygon(screenpointlist.ToArray(), Colors.Black);
-                        
 
+                        //bmp.DrawPolyline(screenpointlist.ToArray(), symbolizer.strokecolor);
                         bmp.DrawPolylineAa(screenpointlist.ToArray(), symbolizer.strokecolor, (int)symbolizer.strokewidth);
                         //list.AddRange(screenpointlist);
                         //graphicspath.AddPolygon(screenpointlist.ToArray());
@@ -516,6 +517,7 @@ namespace GisSmartTools
                     ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(polygon.maxX, polygon.maxY)));
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
+                        if (textsym.font == null) { textsym.font = new PortableFontDesc(emsize: 8); }
                         temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
                         //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
                     }
@@ -646,11 +648,29 @@ namespace GisSmartTools
                     bmp.Blit(rect1, bg1, rect1, WriteableBitmapExtensions.BlendMode.Alpha);
                     break;
             }
-            
+
             //pen.Dispose();
             //brush.Dispose();
             //渲染注记
-
+            if (rule.textsymbolizer != null && temp_textbmp != null)
+            {
+                textsymbolizer textsym = (textsymbolizer)rule.textsymbolizer;
+                if (textsym.visible)
+                {
+                    //Brush textbrush = new SolidBrush(textsym.color);
+                    Object text = "";
+                    //转换坐标
+                    ScreenPoint minxy = FromMapPoint(rstransform.sourceToTarget(new PointD(polygon.minX, polygon.minY)));
+                    ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(polygon.maxX, polygon.maxY)));
+                    if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
+                    {
+                        if (textsym.font == null) { textsym.font = new PortableFontDesc(emsize: 8); }
+                        temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
+                        //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
+                    }
+                    //textbrush.Dispose();
+                }
+            }
         }
 
 
@@ -677,6 +697,7 @@ namespace GisSmartTools
                 screenpointlist.Add(screenpoint.Y);
             }
             //TODO: LineStyle
+            //bmp.DrawCurve(screenpointlist.ToArray(), 0, symbolizer.color);
             bmp.DrawPolylineAa(screenpointlist.ToArray(), symbolizer.color, (int)symbolizer.width);
             //渲染注记
             if (rule.textsymbolizer != null && temp_textbmp != null)
@@ -692,6 +713,7 @@ namespace GisSmartTools
                     ScreenPoint maxxy = FromMapPoint(rstransform.sourceToTarget(new PointD(line.maxX, line.maxY)));
                     if ((text = feature.GetArrtributeByName(textsym.attributename)) != null)
                     {
+                        if (textsym.font == null) { textsym.font = new PortableFontDesc(emsize: 8); }
                         temp_textbmp.DrawString((int)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (int)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y), (System.Windows.Media.Color)textsym.color, Colors.White, textsym.font, text.ToString());
                         //text_g.DrawString(text.ToString(), textsym.font, textbrush, (float)((minxy.X + maxxy.X) / 2 + textsym.offset_x), (float)((minxy.Y + maxxy.Y) / 2 + textsym.offset_y));
                     }
