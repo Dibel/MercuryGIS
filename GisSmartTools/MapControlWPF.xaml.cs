@@ -18,6 +18,7 @@ using GisSmartTools.RS;
 using GisSmartTools.Support;
 using GisSmartTools.Topology;
 using System.Threading;
+using System.IO;
 
 namespace GisSmartTools
 {
@@ -45,9 +46,12 @@ namespace GisSmartTools
 
         #region 数据信息
         //显示信息
-        private double moffsetX = -170D;//X方向上的偏移量(地图放大后超出视域范围，表示视域左上角点在地图上的对应坐标)
-        private double moffsetY = 90D;
-        private double DisplayScale = 0.8D;//显示比例尺的倒数   相当于课上的resolution
+        //private double moffsetX = -170D;//X方向上的偏移量(地图放大后超出视域范围，表示视域左上角点在地图上的对应坐标)
+        //private double moffsetY = 90D;
+        //private double DisplayScale = 0.8D;//显示比例尺的倒数   相当于课上的resolution
+        private double moffsetX = 0D;//X方向上的偏移量(地图放大后超出视域范围，表示视域左上角点在地图上的对应坐标)
+        private double moffsetY = 0D;
+        private double DisplayScale = 1.0D;//显示比例尺的倒数   相当于课上的resolution
         private const double mcZoomRation = 1.2D;//地图放大系数 每次方法多少倍
         private int bitmap_X = 800;
         private int bitmap_Y = 800;
@@ -94,6 +98,10 @@ namespace GisSmartTools
         private WriteableBitmap temp_textbmp;
         private WriteableBitmap linebmp;
         private WriteableBitmap gridbmp;
+
+        private WriteableBitmap raster;
+        private WriteableBitmap raster_backup;
+        private bool isRaster = false;
         #endregion
 
         #region 自定义事件区
@@ -833,6 +841,25 @@ namespace GisSmartTools
             return bmp;
         }
 
+        public void ClearPath()
+        {
+            raster = raster_backup.Clone();
+            mapcontrol_refresh();
+        }
+
+        public void DrawPath(List<int> result)
+        {
+            raster_backup = raster.Clone();
+            using (raster.GetBitmapContext())
+            {
+                for (int i = 0; i < result.Count - 3; i += 2)
+                {
+                    raster.DrawLine(result[i], result[i + 1], result[i + 2], result[i + 3], Colors.Red);
+                }
+            }
+            mapcontrol_refresh();
+        }
+
         /// <summary>
         /// 画正在编辑的要素
         /// </summary>
@@ -997,6 +1024,13 @@ namespace GisSmartTools
         public PointD ToMapPoint(Point point)
         {
             PointD sPoint = new PointD();
+            if (isRaster)
+            {
+                //DisplayScale = raster.PixelHeight / Convert.ToDouble(bitmap_Y);
+                sPoint.X = point.X * DisplayScale + moffsetX;
+                sPoint.Y = point.Y * DisplayScale + moffsetY;
+                return sPoint;
+            }
             sPoint.X = point.X * DisplayScale + moffsetX;
             sPoint.Y = moffsetY - point.Y * DisplayScale;
             return sPoint;
@@ -1516,20 +1550,66 @@ namespace GisSmartTools
             //globalbmp = bmp;
             //pictureBox1.Image = globalbmp;
             //pictureBox1.Refresh();
-
-            globalbmp.Clear();
-            bmp = BitmapFactory.New(bitmap_X, bitmap_Y);
-            temp_textbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
-            paintmap(this.mapcontent);
-            Rect rect = new Rect(0, 0, bitmap_X, bitmap_Y);
-            using (bmp.GetBitmapContext())
+            if (isRaster)
             {
-                bmp.Blit(rect, temp_textbmp, rect);
-                globalbmp.Blit(rect, bmp, rect);
+                int width = raster.PixelWidth;
+                int height = raster.PixelHeight;
+                globalbmp.Clear();
+                int new_width = (int)(width / DisplayScale);
+                int new_height = (int)(height / DisplayScale);
+                WriteableBitmap temp = raster.Resize(new_width, new_height, WriteableBitmapExtensions.Interpolation.Bilinear);
+                Rect original_rect = new Rect(0, 0, bitmap_Y, bitmap_Y);
+                Rect rect = new Rect(0, 0, width, height);
+
+                int screen_x = Convert.ToInt32((0 - moffsetX) / DisplayScale);
+                int screen_y = Convert.ToInt32((0 - moffsetY) / DisplayScale);
+                int screen_x2 = Convert.ToInt32((width - moffsetX) / DisplayScale);
+                int screen_y2 = Convert.ToInt32((height - moffsetY) / DisplayScale);
+                //if (screen_x < 0){ screen_x = 0; }
+                if (height / DisplayScale < bitmap_Y && width/ DisplayScale < bitmap_X)
+                {
+                    rect = new Rect(0, 0, new_width, new_height);
+                    original_rect = new Rect(screen_x, screen_y, new_width, new_height);
+                }
+                else if (width / DisplayScale < bitmap_X)
+                {
+                    rect = new Rect(0, 0, new_width, new_height);
+                    original_rect = new Rect(screen_x, screen_y, new_width, new_height);
+                }
+                else if (height / DisplayScale < bitmap_Y)
+                {
+                    rect = new Rect(0, 0, new_width, new_height);
+                    original_rect = new Rect(screen_x, screen_y, new_width, new_height);
+                }
+                else
+                {
+                    rect = new Rect(0, 0, new_width, new_height);
+                    original_rect = new Rect(screen_x, screen_y, new_width, new_height);
+                }
+                //globalbmp = BitmapFactory.New(width, height);
+                
+                using (globalbmp.GetBitmapContext())
+                {
+                    globalbmp.Blit(original_rect, temp, rect);
+                }
+                this.Source = globalbmp;
             }
-            //globalbmp = bmp;
-            this.Source = globalbmp;
-            //this.InvalidateVisual();
+            else
+            {
+                globalbmp.Clear();
+                bmp = BitmapFactory.New(bitmap_X, bitmap_Y);
+                temp_textbmp = BitmapFactory.New(bitmap_X, bitmap_Y);
+                paintmap(this.mapcontent);
+                Rect rect = new Rect(0, 0, bitmap_X, bitmap_Y);
+                using (bmp.GetBitmapContext())
+                {
+                    bmp.Blit(rect, temp_textbmp, rect);
+                    globalbmp.Blit(rect, bmp, rect);
+                }
+                //globalbmp = bmp;
+                this.Source = globalbmp;
+                //this.InvalidateVisual();
+            }
         }
 
 
@@ -1739,6 +1819,23 @@ namespace GisSmartTools
         {
             bool sign = editmanager.finishpart();
             if (!sign) MessageBox.Show("您输入的点数不足,请继续输入");
+        }
+
+        public void SetRaster(WriteableBitmap bmp)
+        {
+            //Stream imageStreamSource = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            //TiffBitmapDecoder decoder = new TiffBitmapDecoder(imageStreamSource, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+            //BitmapSource bitmapSource = decoder.Frames[0];
+            //raster = new WriteableBitmap(bitmapSource);
+            int width = bmp.PixelWidth;
+            int height = bmp.PixelHeight;
+
+            
+            raster = bmp;
+            raster_backup = raster.Clone();
+            DisplayScale = (double)(height) / bitmap_Y;
+            isRaster = true;
+            mapcontrol_refresh();
         }
 
         #endregion

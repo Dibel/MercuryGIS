@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MercuryGIS</RootNamespace>
     <AssemblyName>MercuryGIS</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -28,6 +28,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -86,6 +87,10 @@
     </Reference>
     <Reference Include="ogr_csharp, Version=1.0.5496.33904, Culture=neutral, PublicKeyToken=db5a52b08dc5b321" />
     <Reference Include="osr_csharp, Version=1.0.5496.33904, Culture=neutral, PublicKeyToken=db5a52b08dc5b321" />
+    <Reference Include="RabbitMQ.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\RabbitMQ.Client.4.1.1\lib\net451\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SharpHttpServer, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Qoollo.SharpHttpServer.0.1.0\lib\net40\SharpHttpServer.dll</HintPath>
       <Private>True</Private>
@@ -180,6 +185,7 @@
     <Compile Include="SelectField.xaml.cs">
       <DependentUpon>SelectField.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SSSPClient.cs" />
     <Compile Include="StartEdit.xaml.cs">
       <DependentUpon>StartEdit.xaml</DependentUpon>
     </Compile>
@@ -401,6 +407,11 @@
     <Resource Include="Resources\Legend32.png" />
     <Resource Include="Resources\Title16.png" />
     <Resource Include="Resources\Title32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Calc.png" />
+    <Resource Include="Resources\Clear.png" />
+    <Resource Include="Resources\OpenRaster.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

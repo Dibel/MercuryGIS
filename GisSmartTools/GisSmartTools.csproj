@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GisSmartTools</RootNamespace>
     <AssemblyName>GisSmartTools</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -45,12 +45,12 @@
       <HintPath>..\packages\GeoJSON.Net.0.1.47\lib\portable-net40+sl5+wp80+win8+wpa81\GeoJSON.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Npgsql, Version=3.1.8.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.3.1.8\lib\net45\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=3.1.9.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.1.9\lib\net451\Npgsql.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ogr_csharp, Version=1.0.5496.33904, Culture=neutral, PublicKeyToken=db5a52b08dc5b321, processorArchitecture=MSIL">
@@ -130,6 +130,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Raster.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="ReferenceSystem.cs" />
     <Compile Include="RSTransform.cs" />
@@ -167,6 +168,7 @@
     <Resource Include="Resources\ZoomOut.cur" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

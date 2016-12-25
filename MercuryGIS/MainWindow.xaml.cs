@@ -37,6 +37,10 @@ namespace MercuryGIS
         //Layer curLayer;
         //Layer backupLayer;
         WfsServer wfsserver;
+        Raster ras;
+        PointD startPoint;
+        PointD endPoint;
+        int raster_status = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -919,6 +923,88 @@ namespace MercuryGIS
             {
                 mapping.SetBmp(mapControl.globalbmp);
             }
+        }
+
+        private void btnOpenRaster_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "TIFF File (.tif)|*.tif";
+            if (dialog.ShowDialog() == true)
+            {
+                string path = dialog.FileName;
+                if (path == null || path == "") return;
+                //mapControl.SetRaster(path);
+                //Stream imageStreamSource = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                //TiffBitmapDecoder decoder = new TiffBitmapDecoder(imageStreamSource, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                //BitmapSource bitmapSource = decoder.Frames[0];
+                //byte[] buffer = new WriteableBitmap(bitmapSource).ToByteArray();
+                ras = new Raster();
+                ras.ReadRaster(path);
+                
+                mapControl.SetRaster(ras.bmp);
+                mapControl.Pan();
+            }
+        }
+
+        private void btnSelectStart_Click(object sender, RoutedEventArgs e)
+        {
+            mapControl.Cursor = Cursors.Cross;
+            raster_status = 1;
+        }
+
+        private void btnSelectEnd_Click(object sender, RoutedEventArgs e)
+        {
+            mapControl.Cursor = Cursors.Cross;
+            raster_status = 2;
+        }
+
+        private void btnCalc_Click(object sender, RoutedEventArgs e)
+        {
+            
+            double[,] data = new double[ras.height, ras.width];
+            for (int i = 0; i < ras.height; i++)
+            {
+                for (int j = 0; j < ras.width; j++)
+                {
+                    data[i, j] = ras.buffer[i * ras.width + j];
+                }
+            }
+            //double[,] data = { { 1.0, 2.0, 3.0 }, { 2.0, 3.0, 4.0 } };
+            //int[] start = { 0, 0 };
+            int[] start = {(int)startPoint.X, (int)startPoint.Y };
+            int[] end = { (int)endPoint.X, (int)endPoint.Y };
+            List<int> result = new List<int>();
+            //int[] temp = { 1, 2, 98, 2, 98, 40, 20, 40, 20, 25 };
+            //result = temp.ToList();
+            SSSPClient.get("pregel").call(data, start, end).ForEach(x => result.Add(x));
+            mapControl.DrawPath(result);
+        }
+
+        private void mapControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (raster_status == 1)
+            {
+                Point scrPoint = e.GetPosition(mapControl);
+                startPoint = mapControl.ToMapPoint(scrPoint);
+                mapControl.Pan();
+            }
+            else if (raster_status == 2)
+            {
+
+                Point scrPoint = e.GetPosition(mapControl);
+                endPoint = mapControl.ToMapPoint(scrPoint);
+                mapControl.Pan();
+            }
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            mapControl.ClearPath();
+        }
+
+        private void RibbonWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SSSPClient.get("pregel").Close();
         }
     }
 

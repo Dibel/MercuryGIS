@@ -9,7 +9,7 @@
         xmlns:MercuryGISControlWPF="clr-namespace:GisSmartTools;assembly=MapControlWPF"
         xmlns:MercuryGISControl="clr-namespace:MercuryGISControl;assembly=MercuryGISControl" x:Class="MercuryGIS.MainWindow"
         mc:Ignorable="d"
-        Title="MercuryGIS" Height="600" Width="760" SizeChanged="RibbonWindow_SizeChanged">
+        Title="MercuryGIS" Height="600" Width="760" SizeChanged="RibbonWindow_SizeChanged" Closing="RibbonWindow_Closing">
 
     <Fluent:RibbonWindow.Resources>
         <ResourceDictionary>
@@ -206,6 +206,23 @@
 						LargeIcon="Resources/Close.png" Click="btnReturn_Click"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
+
+            <Fluent:RibbonTabItem x:Name="TabAnalysis" Header="分析">
+                <Fluent:RibbonGroupBox Header="数据">
+                    <Fluent:Button x:Name="btnOpenRaster" Header="打开栅格数据"
+						LargeIcon="Resources/OpenRaster.png" Click="btnOpenRaster_Click"/>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="最短路径分析">
+                    <Fluent:Button x:Name="btnSelectStart" Header="选取起点"
+						LargeIcon="Resources/Select.png" Click="btnSelectStart_Click"/>
+                    <Fluent:Button x:Name="btnSelectEnd" Header="选取终点"
+						LargeIcon="Resources/Select.png" Click="btnSelectEnd_Click"/>
+                    <Fluent:Button x:Name="btnCalc" Header="计算最短路径"
+						LargeIcon="Resources/Calc.png" Click="btnCalc_Click"/>
+                    <Fluent:Button x:Name="btnClear" Header="清除路径"
+						LargeIcon="Resources/Clear.png" Click="btnClear_Click"/>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
             <!--<Fluent:RibbonTabItem x:Name="TabLayer" Header="图层" Group="{Binding ElementName=groupEdit}">
                 <Fluent:RibbonGroupBox Header="添加要素">
                 </Fluent:RibbonGroupBox>
@@ -262,7 +279,7 @@
                         </xcad:LayoutAnchorablePane>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument x:Name="editing_view" ContentId="document1" Title="编辑视图" CanClose="False">
-                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True"  MouseMove="mapControl_MouseMove" MouseWheel="mapControl_MouseWheel"/>
+                                <GisSmartTools:MapControlWPF x:Name="mapControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True"  MouseMove="mapControl_MouseMove" MouseWheel="mapControl_MouseWheel" MouseLeftButtonDown="mapControl_MouseLeftButtonDown"/>
                                 <!--<MercuryGISControl:MapControl x:Name="mapControl" Height="414" Width="546" HorizontalAlignment="Left"  VerticalAlignment="Top" ClipToBounds="True" MouseMove="mapControl_MouseMove" MouseLeftButtonUp="mapControl_MouseLeftButtonUp"/>-->
                             </xcad:LayoutDocument>
                             <xcad:LayoutDocument x:Name="mapping_view" ContentId="document2" Title="制图视图" IsEnabled="False" CanClose="False" IsActiveChanged="mapping_view_IsActiveChanged">
