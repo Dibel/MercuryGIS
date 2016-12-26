@@ -976,7 +976,8 @@ namespace MercuryGIS
             List<int> result = new List<int>();
             //int[] temp = { 1, 2, 98, 2, 98, 40, 20, 40, 20, 25 };
             //result = temp.ToList();
-            SSSPClient.get("pregel").call(data, start, end).ForEach(x => result.Add(x));
+            string method = comboxCalc.Text;
+            SSSPClient.get(method).call(data, start, end).ForEach(x => result.Add(x));
             mapControl.DrawPath(result);
         }
 
@@ -987,6 +988,8 @@ namespace MercuryGIS
                 Point scrPoint = e.GetPosition(mapControl);
                 startPoint = mapControl.ToMapPoint(scrPoint);
                 mapControl.Pan();
+                mapControl.SetStart((int)startPoint.X, (int)startPoint.Y);
+                raster_status = 0;
             }
             else if (raster_status == 2)
             {
@@ -994,6 +997,8 @@ namespace MercuryGIS
                 Point scrPoint = e.GetPosition(mapControl);
                 endPoint = mapControl.ToMapPoint(scrPoint);
                 mapControl.Pan();
+                mapControl.SetEnd((int)endPoint.X, (int)endPoint.Y);
+                raster_status = 0;
             }
         }
 
@@ -1004,7 +1009,30 @@ namespace MercuryGIS
 
         private void RibbonWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            SSSPClient.get("pregel").Close();
+            SSSPClient.closeAll();
+            //SSSPClient.get("pregel").Close();
+        }
+
+        private void btnSelectStartByCoord_Click(object sender, RoutedEventArgs e)
+        {
+            Coord dialog = new Coord();
+            if (dialog.ShowDialog() == true)
+            {
+                startPoint.X = dialog.X;
+                startPoint.Y = dialog.Y;
+                mapControl.SetStart(dialog.X, dialog.Y);
+            }
+        }
+
+        private void btnSelectEndByCoord_Click(object sender, RoutedEventArgs e)
+        {
+            Coord dialog = new Coord();
+            if (dialog.ShowDialog() == true)
+            {
+                endPoint.X = dialog.X;
+                endPoint.Y = dialog.Y;
+                mapControl.SetEnd(dialog.X, dialog.Y);
+            }
         }
     }
 

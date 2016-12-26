@@ -101,6 +101,8 @@ namespace GisSmartTools
 
         private WriteableBitmap raster;
         private WriteableBitmap raster_backup;
+        private WriteableBitmap raster_start_backup;
+        private WriteableBitmap raster_end_backup;
         private bool isRaster = false;
         #endregion
 
@@ -844,12 +846,14 @@ namespace GisSmartTools
         public void ClearPath()
         {
             raster = raster_backup.Clone();
+            raster_end_backup = raster_backup.Clone();
+            raster_start_backup = raster_backup.Clone();
             mapcontrol_refresh();
         }
 
         public void DrawPath(List<int> result)
         {
-            raster_backup = raster.Clone();
+            //raster_backup = raster.Clone();
             using (raster.GetBitmapContext())
             {
                 for (int i = 0; i < result.Count - 3; i += 2)
@@ -858,6 +862,8 @@ namespace GisSmartTools
                 }
             }
             mapcontrol_refresh();
+            raster_end_backup = raster_backup.Clone();
+            raster_start_backup = raster_backup.Clone();
         }
 
         /// <summary>
@@ -1833,9 +1839,37 @@ namespace GisSmartTools
             
             raster = bmp;
             raster_backup = raster.Clone();
+            raster_start_backup = raster.Clone();
+            raster_end_backup = raster.Clone();
             DisplayScale = (double)(height) / bitmap_Y;
             isRaster = true;
             mapcontrol_refresh();
+        }
+
+        public void SetStart(int x, int y)
+        {
+            raster = raster_backup.Clone();
+            //raster_backup = raster.Clone();
+            int radius = raster.PixelHeight / 100;
+            using (raster.GetBitmapContext())
+            {
+                raster.FillEllipseCentered(x, y, radius, radius, Colors.Blue);
+                //raster.SetPixel(x, y, Colors.Blue);
+            }
+            mapcontrol_refresh();
+            raster_start_backup = raster.Clone();
+        }
+
+        public void SetEnd(int x, int y)
+        {
+            raster = raster_start_backup.Clone();
+            int radius = raster.PixelHeight / 100;
+            using (raster.GetBitmapContext())
+            {
+                raster.FillEllipseCentered(x, y, radius, radius, Colors.Blue);
+            }
+            mapcontrol_refresh();
+            raster_end_backup = raster.Clone();
         }
 
         #endregion

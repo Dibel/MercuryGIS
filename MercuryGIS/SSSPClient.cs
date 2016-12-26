@@ -29,6 +29,14 @@ namespace MercuryGIS
             return clients[methodname];
         }
 
+        public static void closeAll()
+        {
+            foreach (var val in clients.Values)
+            {
+                val.Close();
+            }
+        }
+
         protected SSSPClient(string methodname)
         {
             this.methodname = methodname;

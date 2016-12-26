@@ -213,12 +213,32 @@
 						LargeIcon="Resources/OpenRaster.png" Click="btnOpenRaster_Click"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="最短路径分析">
-                    <Fluent:Button x:Name="btnSelectStart" Header="选取起点"
-						LargeIcon="Resources/Select.png" Click="btnSelectStart_Click"/>
-                    <Fluent:Button x:Name="btnSelectEnd" Header="选取终点"
-						LargeIcon="Resources/Select.png" Click="btnSelectEnd_Click"/>
-                    <Fluent:Button x:Name="btnCalc" Header="计算最短路径"
-						LargeIcon="Resources/Calc.png" Click="btnCalc_Click"/>
+                    <Fluent:SplitButton x:Name="btnSelectStart" Header="选取起点"
+						LargeIcon="Resources/Select.png" Click="btnSelectStart_Click">
+                        <Fluent:MenuItem x:Name="btnSelectStartByCoord" Header="通过坐标选取" Click="btnSelectStartByCoord_Click"></Fluent:MenuItem>
+                    </Fluent:SplitButton>
+                    <Fluent:SplitButton x:Name="btnSelectEnd" Header="选取终点"
+						LargeIcon="Resources/Select.png" Click="btnSelectEnd_Click">
+                        <Fluent:MenuItem x:Name="btnSelectEndByCoord" Header="通过坐标选取" Click="btnSelectEndByCoord_Click"></Fluent:MenuItem>
+                    </Fluent:SplitButton>
+                    <Fluent:RibbonToolBar>
+                        <!--ToolBar Layout Definitions-->
+                        <Fluent:RibbonToolBar.LayoutDefinitions>
+                            <!--Large Size of the RibbonToolBar-->
+                            <Fluent:RibbonToolBarLayoutDefinition Size="Large">
+                                <Fluent:RibbonToolBarRow>
+                                    <Fluent:RibbonToolBarControlDefinition Target="comboxCalc" Size="Large"/>
+                                </Fluent:RibbonToolBarRow>
+                                <Fluent:RibbonToolBarRow>
+                                    <Fluent:RibbonToolBarControlDefinition Target="btnCalc"
+                                                                           Size="Middle" />
+                                </Fluent:RibbonToolBarRow>
+                            </Fluent:RibbonToolBarLayoutDefinition>
+                        </Fluent:RibbonToolBar.LayoutDefinitions>
+                        <Fluent:ComboBox x:Name="comboxCalc" Header="方法" Text="pregel" ></Fluent:ComboBox>
+                        <Fluent:Button x:Name="btnCalc" Header="计算最短路径" Size="Middle"
+						Icon="Resources/Calc.png" Click="btnCalc_Click"/>
+                    </Fluent:RibbonToolBar>
                     <Fluent:Button x:Name="btnClear" Header="清除路径"
 						LargeIcon="Resources/Clear.png" Click="btnClear_Click"/>
                 </Fluent:RibbonGroupBox>

@@ -151,6 +151,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Coord.xaml.cs">
+      <DependentUpon>Coord.xaml</DependentUpon>
+    </Compile>
     <Compile Include="InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
@@ -201,6 +204,10 @@
     <Compile Include="Title.xaml.cs">
       <DependentUpon>Title.xaml</DependentUpon>
     </Compile>
+    <Page Include="Coord.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="InputBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
