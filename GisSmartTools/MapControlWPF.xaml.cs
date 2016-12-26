@@ -103,6 +103,9 @@ namespace GisSmartTools
         private WriteableBitmap raster_backup;
         private WriteableBitmap raster_start_backup;
         private WriteableBitmap raster_end_backup;
+
+        private System.Windows.Media.Color[] colorlist = {Colors.Red, Colors.Blue, Colors.Green, Colors.Blue, Colors.Purple, Colors.Brown, Colors.Orange };
+        private int colorindex = 0;
         private bool isRaster = false;
         #endregion
 
@@ -853,12 +856,13 @@ namespace GisSmartTools
 
         public void DrawPath(List<int> result)
         {
+            System.Windows.Media.Color color = colorlist[(colorindex++) % 7];
             //raster_backup = raster.Clone();
             using (raster.GetBitmapContext())
             {
                 for (int i = 0; i < result.Count - 3; i += 2)
                 {
-                    raster.DrawLine(result[i], result[i + 1], result[i + 2], result[i + 3], Colors.Red);
+                    raster.DrawLine(result[i], result[i + 1], result[i + 2], result[i + 3], color);
                 }
             }
             mapcontrol_refresh();

@@ -41,10 +41,13 @@ namespace MercuryGIS
         PointD startPoint;
         PointD endPoint;
         int raster_status = 0;
+        List<string> list = new List<string> { "pregel", "astar_no", "astar_euc", "astar_man", "dijkstra", "antsgroup"};
         public MainWindow()
         {
+            
             InitializeComponent();
             mapControl.AfterSelectedFeaturesEvent += mapControl_AfterSelectedFeaturesEvent;
+            comboxCalc.ItemsSource = list;
         }
 
         private void mapControl_AfterSelectedFeaturesEvent(FeatureCollection collection)
